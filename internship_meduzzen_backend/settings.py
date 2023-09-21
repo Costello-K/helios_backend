@@ -17,7 +17,7 @@ if os.path.exists(dotenv_path):
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(int(os.environ.get('DEBUG', default=0)))
+DEBUG = os.environ.get('DEBUG', default=False)
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 

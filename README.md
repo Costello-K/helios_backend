@@ -3,7 +3,7 @@ Backend internship at "Meduzzen" company
 
 Project description:
 
-This project is an API application. Users can create companies, manage their employees, and create assessment tests for their employees. In addition, the system provides a function to notify employees about new tests. The project is built using the Django REST Framework (DRF) for the API.
+This project is an API application. Users can create companies, manage their employees, and create assessment quizzes for their employees. In addition, the system provides a function to notify employees about new quizzes. The project is built using the Django REST Framework (DRF) for the API.
 
 Development Tools:
 
