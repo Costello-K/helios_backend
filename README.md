@@ -12,6 +12,8 @@ Development Tools:
     Django == 4.2.5
     Django REST Framework 3.14.0
 
+    Docker 20.10.2
+
 
 Installation and running the project:
 
@@ -49,7 +51,31 @@ Installation and running the project:
         http://127.0.0.1:8000/
 
 
+Deploying the application using Docker:
 
+1) Ensure that Docker and Docker Compose are installed on your system.
+
+2) In the root directory of the project, create an ".env" file. In the ".env" file, copy all the variables from the ".env.sample" file and give them values
+
+3) Build the Docker images:
+
+       docker-compose build
+4) Start the containers:
+
+       docker-compose up
+5) You can now open a web browser and see the application in action at the following address.
+       
+       http://127.0.0.1:8000
+6) All tests are performed automatically before the server starts.
+
+7) If you need to run the tests yourself, you need to run the commands:
+       
+       docker-compose up
+       docker container ls
+   You need to copy the ID of the running container with our application and paste it instead of "<container_id>"
+
+       docker exec -it <container_id> /bin/bash
+       python manage.py test
 
 License:
 
