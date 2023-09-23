@@ -66,9 +66,7 @@ Deploying the application using Docker:
 5) You can now open a web browser and see the application in action at the following address.
        
        http://127.0.0.1:8000
-6) All tests are performed automatically before the server starts.
-
-7) If you need to run the tests yourself, you need to run the commands:
+6) If you need to run the tests yourself, you need to run the commands:
        
        docker-compose up
        docker container ls
