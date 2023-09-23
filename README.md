@@ -41,10 +41,16 @@ Installation and running the project:
 6) Run tests
 
        python manage.py test
-7) Run server
+7) Create migrations
+
+       python manage.py makemigrations
+8) Apply migrations to the database
+
+       python manage.py migrate
+9) Run server
 
        python manage.py runserver
-8) Links
+10) Links
 
     DRF API 
 
