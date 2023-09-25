@@ -18,6 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'first_name', 'last_name', 'email', 'password', 'confirm_password']
+        ordering = ['created_at']
 
     def create(self, validated_data):
         """

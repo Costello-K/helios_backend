@@ -8,6 +8,3 @@ class CustomUser(AbstractUser, TimeStampedModel):
     This class represents a custom user model with additional timestamp fields.
     """
     pass
-
-    class Meta:
-        ordering = ['created_at']
