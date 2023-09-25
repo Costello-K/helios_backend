@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'company',
     'quiz',
     'message',
+
+    'common',
 ]
 
 MIDDLEWARE = [
@@ -163,4 +165,37 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
+}
+
+
+# LOGGING
+# Path to the log folder
+log_dir = os.path.join(BASE_DIR, 'logs')
+
+# Create a folder for logs if it does not exist
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+
+# Logging settings
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%{asctime:25s}{filename:25s}{lineno:3d} {levelname:8s}{message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(log_dir, 'event_log.log'),
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['file'],
+        'level': 'INFO',
+    },
 }
