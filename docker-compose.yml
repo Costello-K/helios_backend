@@ -12,6 +12,8 @@ services:
       - '5432:5432'
     volumes:
       - pgsql_data:/var/lib/postgresql/data/
+    networks:
+      - internship_network
 
   redis:
     container_name: ${REDIS_HOST}
@@ -22,6 +24,8 @@ services:
       - '6379:6379'
     volumes:
       - ./redis-data:/var/lib/redis/data/
+    networks:
+      - internship_network
 
   backend:
     container_name: internship_backend
@@ -33,6 +37,8 @@ services:
     depends_on:
       - db
       - redis
+    networks:
+      - internship_network
 
 volumes:
   pgsql_data:
