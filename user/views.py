@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import UserSerializer
-from services.permissions import IsOwnerOrReadOnly
+from common.permissions import IsOwnerOrReadOnly
 from services.decorators import log_database_changes
 
 User = get_user_model()

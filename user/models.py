@@ -1,5 +1,5 @@
 from django.contrib.auth.models import AbstractUser
-from services.models_helpers import TimeStampedModel
+from common.models import TimeStampedModel
 
 
 class CustomUser(AbstractUser, TimeStampedModel):
