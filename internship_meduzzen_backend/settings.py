@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'internship_meduzzen_backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('PSQL_ENGINE'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.environ.get('PSQL_NAME'),
         'USER': os.environ.get('PSQL_USER'),
         'PASSWORD': os.environ.get('PSQL_PASSWORD'),
