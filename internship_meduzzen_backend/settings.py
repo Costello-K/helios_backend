@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'company',
     'quiz',
     'message',
+
+    'common',
 ]
 
 MIDDLEWARE = [
@@ -82,7 +84,7 @@ WSGI_APPLICATION = 'internship_meduzzen_backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('PSQL_ENGINE'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.environ.get('PSQL_NAME'),
         'USER': os.environ.get('PSQL_USER'),
         'PASSWORD': os.environ.get('PSQL_PASSWORD'),
@@ -168,4 +170,37 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
     'DEFAULT_PAGINATION_CLASS': 'services.pagination.SettingsPageNumberPagination',
+}
+
+
+# LOGGING
+# Path to the log folder
+log_dir = os.path.join(BASE_DIR, 'logs')
+
+# Create a folder for logs if it does not exist
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+
+# Logging settings
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%{asctime:25s}{filename:25s}{lineno:3d} {levelname:8s}{message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(log_dir, 'event_log.log'),
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['file'],
+        'level': 'INFO',
+    },
 }
