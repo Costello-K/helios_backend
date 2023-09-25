@@ -1,0 +1,33 @@
+# ignore .git and .cash folders
+.git
+.cache
+
+# ignore all Docker files
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# ignore all markdown files (md)
+*.md
+
+# ignore virtual environment files
+env
+venv
+
+# ignore PyCharm files
+.idea
+
+# ignore sensitive files
+.env
+**/.env
+.env.sample
+
+# ignore Django files
+*.log
+*.pot
+*.pyc
+__pycache__
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media
