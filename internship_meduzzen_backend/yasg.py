@@ -1,8 +1,7 @@
-from rest_framework import permissions
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
 from django.urls import path, re_path
-
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+from rest_framework import permissions
 
 # Create a schema view for generating API documentation using drf-yasg
 schema_view = get_schema_view(

@@ -1,9 +1,10 @@
-from rest_framework import viewsets
 from django.contrib.auth import get_user_model
-from .serializers import UserSerializer, UserDetailSerializer
+from rest_framework import viewsets
+
 from common.permissions import IsOwnerOrReadOnly
 from services.decorators import log_database_changes
 
+from .serializers import UserDetailSerializer, UserSerializer
 
 User = get_user_model()
 

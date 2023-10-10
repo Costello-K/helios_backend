@@ -1,9 +1,10 @@
+from functools import partial
+
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from functools import partial
-from django.contrib.auth.models import AbstractUser
-from common.models import TimeStampedModel
 
+from common.models import TimeStampedModel
 from services.get_file_path import get_path_with_unique_filename
 
 

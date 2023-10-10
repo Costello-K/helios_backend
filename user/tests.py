@@ -1,8 +1,8 @@
-from django.test import TestCase
-from rest_framework.test import APIClient
-from rest_framework import status
 from django.contrib.auth import get_user_model
+from django.test import TestCase
 from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APIClient
 
 User = get_user_model()
 
@@ -80,6 +80,25 @@ class UserTests(TestCase):
         response = self.client.patch(url, updated_data, format='json')
 
         # assertions
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_update_non_own_user(self):
+        """
+        Test of attempt to updating user_1 information via the API (with authentication user_2)
+        """
+        # perform authentication
+        self.client.force_authenticate(user=self.user_2)
+        # create a URL for accessing the API endpoint
+        url = reverse('user-detail', args=[self.user_1.id])
+        # data to update
+        updated_data = {
+            'first_name': 'Updated',
+            'last_name': 'User_1',
+        }
+        # send a PATCH request
+        response = self.client.patch(url, updated_data, format='json')
+
+        # assertions
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_update_user_authenticated(self):
@@ -110,6 +129,20 @@ class UserTests(TestCase):
         """
         # create a URL for accessing the API endpoint
         url = reverse('user-detail', args=[self.user_2.id])
+        # send a DELETE request
+        response = self.client.delete(url)
+
+        # assertions
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_delete_non_own_user(self):
+        """
+        Test of attempt to deleting a user_1 via the API (with authentication user_2)
+        """
+        # perform authentication
+        self.client.force_authenticate(user=self.user_2)
+        # create a URL for accessing the API endpoint
+        url = reverse('user-detail', args=[self.user_1.id])
         # send a DELETE request
         response = self.client.delete(url)
 
