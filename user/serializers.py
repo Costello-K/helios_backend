@@ -1,6 +1,7 @@
 from django.conf import settings
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from django.utils.translation import gettext_lazy as _
+from rest_framework import serializers
 
 User = get_user_model()
 
@@ -41,27 +42,27 @@ class UserSerializer(serializers.ModelSerializer):
         # check that the 'password' field is not empty
         if password is None:
             raise serializers.ValidationError(
-                {'password': 'Password is required for user creation.'}
+                {'password': _('Password is required for user creation.')}
             )
         # check that the 'password' matches the 'confirm_password' field
         if password != confirm_password:
             raise serializers.ValidationError(
-                {'confirm_password': 'Password and confirm_password are different.'}
+                {'confirm_password': _('Password and confirm_password are different.')}
             )
         # check that the email field is not empty
         if not email:
             raise serializers.ValidationError(
-                {'email': 'Email field is required.'}
+                {'email': _('Email field is required.')}
             )
         # check that the email field is not use
         if User.objects.filter(email=email).exists():
             raise serializers.ValidationError(
-                {'email': 'Email is already in use.'}
+                {'email': _('Email is already in use.')}
             )
         # check the avatar file size to the maximum allowed size
         if avatar and avatar.size > (settings.USER_AVATAR_MAX_SIZE_MB * 1024 * 1024):
             raise serializers.ValidationError(
-                {'avatar': f'Maximum image size allowed is {settings.USER_AVATAR_MAX_SIZE_MB}Mb'}
+                {'avatar': _('Maximum image size allowed is {} Mb').format(settings.USER_AVATAR_MAX_SIZE_MB)}
             )
 
         # create a new user
@@ -69,6 +70,25 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data, password=password, is_active=False)
 
         return user
+
+    def to_representation(self, instance):
+        # Initialize the data dictionary with the default representation
+        data = super().to_representation(instance)
+
+        request = self.context.get('request')
+        request_method = request.method if request else None
+        # Get 'avatar' value from initial_data or set it to None
+        avatar = self.initial_data.get('avatar') if hasattr(self, 'initial_data') else None
+
+        if request_method in ['PUT', 'PATCH']:
+            # If 'avatar' in the request is an empty string, set it to the default avatar URL
+            if avatar == '':
+                data['avatar'] = settings.DEFAULT_USER_AVATAR_URL
+            # If 'avatar' in the request is not empty, set it to the user's avatar URL
+            elif avatar:
+                data['avatar'] = instance.avatar.url
+
+        return data
 
 
 class UserDetailSerializer(UserSerializer):
