@@ -5,14 +5,17 @@ env:
   DEBUG: ${{ secrets.DEBUG }}
   DJANGO_ALLOWED_HOSTS: ${{ secrets.DJANGO_ALLOWED_HOSTS }}
 
-  GOOGLE_OAUTH2_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH2_CLIENT_ID }}
-  GOOGLE_OAUTH2_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH2_CLIENT_SECRET }}
-  SOCIAL_AUTH_FACEBOOK_KEY: ${{ secrets.SOCIAL_AUTH_FACEBOOK_KEY }}
-  SOCIAL_AUTH_FACEBOOK_SECRET: ${{ secrets.SOCIAL_AUTH_FACEBOOK_SECRET }}
+  PSQL_DB: ${{ secrets.PSQL_DB }}
+  PSQL_NAME: ${{ secrets.PSQL_NAME }}
+  PSQL_USER: ${{ secrets.PSQL_USER }}
+  PSQL_PASSWORD: ${{ secrets.PSQL_PASSWORD }}
+  PSQL_HOST: ${{ secrets.PSQL_HOST }}
+  PSQL_PORT: ${{ secrets.PSQL_PORT }}
 
-  EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
-  EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
-  DEFAULT_FROM_EMAIL: ${{ secrets.DEFAULT_FROM_EMAIL }}
+  REDIS_HOST: ${{ secrets.REDIS_HOST }}
+  REDIS_PORT: ${{ secrets.REDIS_PORT }}
+  REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+  REDIS_DB: ${{ secrets.REDIS_DB }}
 
 on:
   push:
@@ -30,13 +33,12 @@ jobs:
       postgres:
         image: postgres:latest
         env:
-          DATABASE: ${{ secrets.DATABASE }}
-          PSQL_DB: ${{ secrets.PSQL_DB }}
-          PSQL_NAME: ${{ secrets.PSQL_NAME }}
-          PSQL_USER: ${{ secrets.PSQL_USER }}
-          PSQL_PASSWORD: ${{ secrets.PSQL_PASSWORD }}
-          PSQL_HOST: ${{ secrets.PSQL_HOST }}
-          PSQL_PORT: ${{ secrets.PSQL_PORT }}
+          POSTGRES_DB: ${{ secrets.PSQL_DB }}
+          POSTGRES_NAME: ${{ secrets.PSQL_NAME }}
+          POSTGRES_USER: ${{ secrets.PSQL_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.PSQL_PASSWORD }}
+          POSTGRES_HOST: ${{ secrets.PSQL_HOST }}
+          POSTGRES_PORT: ${{ secrets.PSQL_PORT }}
         ports:
           - 5432:5432
         options: >-
