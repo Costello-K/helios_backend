@@ -17,13 +17,7 @@ env:
   REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
   REDIS_DB: ${{ secrets.REDIS_DB }}
 
-on:
-  push:
-    branches:
-      - '*'
-  pull_request:
-    branches:
-      - 'develop'
+on: [push]
 
 jobs:
   build:
