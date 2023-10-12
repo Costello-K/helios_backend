@@ -27,9 +27,6 @@ jobs:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_DB: ${{ secrets.PSQL_DB }}
-          POSTGRES_NAME: ${{ secrets.PSQL_NAME }}
-          POSTGRES_USER: ${{ secrets.PSQL_USER }}
           POSTGRES_PASSWORD: ${{ secrets.PSQL_PASSWORD }}
           POSTGRES_HOST: ${{ secrets.PSQL_HOST }}
           POSTGRES_PORT: ${{ secrets.PSQL_PORT }}
@@ -43,11 +40,6 @@ jobs:
 
       redis:
         image: redis:latest
-        env:
-          REDIS_HOST: ${{ secrets.REDIS_HOST }}
-          REDIS_PORT: ${{ secrets.REDIS_PORT }}
-          REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
-          REDIS_DB: ${{ secrets.REDIS_DB }}
         ports:
           - 6379:6379
         options: >-
