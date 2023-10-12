@@ -108,7 +108,7 @@ class UserDetailSerializer(UserSerializer):
         Get the user's avatar URL.
         This method retrieves the URL of the user's avatar if it's available or provides a default avatar URL if not.
         """
-        if user.avatar and user.avatar.file:
+        if hasattr(user, 'avatar') and user.avatar and hasattr(user.avatar, 'file'):
             return user.avatar.url
         # if the image does not exist, we send the image for the user by default
         return settings.DEFAULT_USER_AVATAR_URL
