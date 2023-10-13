@@ -9,3 +9,14 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
         return instance == request.user
+
+
+class IsCompanyOwnerOrReadOnly(permissions.BasePermission):
+    """
+    Custom permission to only allow company owners to edit and delete their own companies,
+    but allow any user to view them
+    """
+    def has_object_permission(self, request, view, instance):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return instance.owner == request.user
