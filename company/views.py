@@ -33,15 +33,13 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = Company.objects.all()
-        owner_id = self.request.data.get('owner_id', None)
-        auth_user_id = self.request.user.id
+        owner_id = self.request.data.get('user_id', None)
 
-        if owner_id == 'me' or owner_id == auth_user_id:
-            queryset = queryset.filter(owner=auth_user_id)
-        elif owner_id:
-            queryset = queryset.filter(owner=owner_id, visibility=True)
-        else:
+        if owner_id != self.request.user.id:
             queryset = queryset.filter(visibility=True)
+
+        if owner_id:
+            queryset = queryset.filter(owner_id=owner_id)
 
         queryset = queryset.order_by(*self.ordering)
 
