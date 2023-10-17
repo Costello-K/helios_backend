@@ -11,20 +11,17 @@ User = get_user_model()
 
 @log_database_changes
 class UserViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet for managing User objects.
+    permission_classes = (IsOwnerOrReadOnly, )
+    ordering = ('created_at', )
 
-    Attributes:
-        queryset (QuerySet): Queryset containing all User objects.
-        permission_classes (list): Permission classes for controlling access.
-    """
-    queryset = User.objects.all()
-    permission_classes = [IsOwnerOrReadOnly]
+    def get_queryset(self):
+        queryset = User.objects.all()
+
+        queryset = queryset.order_by(*self.ordering)
+
+        return queryset
 
     def get_serializer_class(self):
-        """
-        Determine the appropriate serializer class based on the action being performed.
-        """
         if self.action in ('retrieve', 'list'):
             return UserDetailSerializer
         return UserSerializer

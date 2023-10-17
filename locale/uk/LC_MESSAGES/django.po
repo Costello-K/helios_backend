@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-07 17:15+0300\n"
+"POT-Creation-Date: 2023-10-14 00:17+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,6 +20,30 @@ msgstr ""
 "11 ? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % "
 "100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || "
 "(n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
+
+#: .\company\models.py:11
+msgid "name"
+msgstr "назва"
+
+#: .\company\models.py:12
+msgid "description"
+msgstr "описання"
+
+#: .\company\models.py:13
+msgid "visibility"
+msgstr "видимість"
+
+#: .\company\models.py:14
+msgid "owner"
+msgstr "власник"
+
+#: .\company\models.py:17
+msgid "Company"
+msgstr "Компанія"
+
+#: .\company\models.py:18
+msgid "Companies"
+msgstr "Компанії"
 
 #: .\internship_meduzzen_backend\settings.py:147
 msgid "English"
@@ -148,7 +172,8 @@ msgstr ""
 #: .\templates\account_username_reset.html:12
 #: .\templates\account_username_reset.html:24
 msgid "Please go to the following page and choose a new username:"
-msgstr "Будь ласка, перейдіть за наступним посиланням та виберіть новий юзернейм:"
+msgstr ""
+"Будь ласка, перейдіть за наступним посиланням та виберіть новий юзернейм:"
 
 #: .\templates\account_username_reset.html:22
 #, python-format
@@ -159,26 +184,26 @@ msgstr ""
 "Ви отримали цей електронний лист, оскільки надіслали запит на скидання "
 "юзернейма для свогоакаунта на %(site_name)s."
 
-#: .\user\models.py:21
+#: .\user\models.py:22
 msgid "avatar"
 msgstr "аватар"
 
-#: .\user\serializers.py:45
+#: .\user\serializers.py:44
 msgid "Password is required for user creation."
 msgstr "Поле пароль є обов'язковим"
 
-#: .\user\serializers.py:50
+#: .\user\serializers.py:49
 msgid "Password and confirm_password are different."
 msgstr "Пароль та підтвердження пароля не співпадають."
 
-#: .\user\serializers.py:55
+#: .\user\serializers.py:54
 msgid "Email field is required."
 msgstr "Поле емейл є обов'язковим."
 
-#: .\user\serializers.py:60
+#: .\user\serializers.py:59
 msgid "Email is already in use."
 msgstr "Емейл вже існує."
 
-#: .\user\serializers.py:65
+#: .\user\serializers.py:64
 msgid "Maximum image size allowed is {} Mb"
 msgstr "Максимальний допустимий розмір файлу {} Mб"
