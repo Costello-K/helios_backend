@@ -23,3 +23,11 @@ class CustomUser(AbstractUser, TimeStampedModel):
         upload_to=partial(get_path_with_unique_filename, file_path='images/users/avatars'),
         blank=True,
     )
+
+    @property
+    def my_requests(self):
+        return self.requesttocompany_set
+
+    @property
+    def my_invitations(self):
+        return self.received_invitations

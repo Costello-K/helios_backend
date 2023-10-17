@@ -1,22 +1,77 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 
+from company.models import Company
 
-class IsOwnerOrReadOnly(permissions.BasePermission):
+
+class ReadOnly(permissions.BasePermission):
     """
-    Custom permission to only allow owners to edit and delete their own objects, but allow any user to view them
+    Provides read-only access
+    """
+    def has_permission(self, request, view):
+        return request.method in permissions.SAFE_METHODS
+
+
+class IsOwner(permissions.BasePermission):
+    """
+    Grants access to the object only to the owner
     """
     def has_object_permission(self, request, view, instance):
-        if request.method in permissions.SAFE_METHODS:
-            return True
         return instance == request.user
 
 
-class IsCompanyOwnerOrReadOnly(permissions.BasePermission):
+class IsCompanyOwner(permissions.BasePermission):
     """
-    Custom permission to only allow company owners to edit and delete their own companies,
-    but allow any user to view them
+    Grants access to the object only to the company owner
+    """
+    def has_permission(self, request, view):
+        if view.action == 'remove_user':
+            company_pk = request.parser_context.get('kwargs', {}).get('company_pk')
+
+            if company_pk is None:
+                return False
+
+            company = get_object_or_404(Company, pk=company_pk)
+            return company.is_owner(request.user)
+
+        return super().has_permission(request, view)
+
+    def has_object_permission(self, request, view, instance):
+        if hasattr(instance, 'company'):
+            return instance.company.is_owner(request.user)
+        elif hasattr(instance, 'owner'):
+            return instance.is_owner(request.user)
+        return False
+
+
+class IsInvitationRecipient(permissions.BasePermission):
+    """
+    Grants access to the object only to the recipient
     """
     def has_object_permission(self, request, view, instance):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        return instance.owner == request.user
+        return instance.recipient == request.user
+
+
+class IsRequestSender(permissions.BasePermission):
+    """
+    Grants access to the object only to the sender
+    """
+    def has_object_permission(self, request, view, instance):
+        return instance.sender == request.user
+
+
+class IsCompanyOwnerCreateInvitation(permissions.IsAuthenticated):
+    """
+    Only the company owner can create invitations
+    """
+    def has_permission(self, request, view):
+        if view.action == 'create':
+            company_pk = request.parser_context.get('kwargs', {}).get('company_pk')
+
+            if company_pk is None:
+                return False
+
+            company = get_object_or_404(Company, pk=company_pk)
+            return company.is_owner(request.user)
+
+        return super().has_permission(request, view)

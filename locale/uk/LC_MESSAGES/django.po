@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-14 00:17+0300\n"
+"POT-Creation-Date: 2023-10-17 02:48+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,29 +21,66 @@ msgstr ""
 "100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || "
 "(n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
 
-#: .\company\models.py:11
+#: .\company\models.py:14
 msgid "name"
 msgstr "назва"
 
-#: .\company\models.py:12
+#: .\company\models.py:15
 msgid "description"
-msgstr "описання"
+msgstr "опис"
 
-#: .\company\models.py:13
+#: .\company\models.py:16
 msgid "visibility"
 msgstr "видимість"
 
-#: .\company\models.py:14
+#: .\company\models.py:17
 msgid "owner"
 msgstr "власник"
 
-#: .\company\models.py:17
-msgid "Company"
-msgstr "Компанія"
+#: .\company\models.py:24 .\company\models.py:82 .\company\models.py:107
+msgid "The user is already a member of the company."
+msgstr "Користувач вже є учасником компанії."
 
-#: .\company\models.py:18
-msgid "Companies"
-msgstr "Компанії"
+#: .\company\models.py:26 .\company\serializers.py:51
+msgid "The owner cannot be a member of the company."
+msgstr "Власник не може бути членом компанії."
+
+#: .\company\models.py:49
+msgid "The user is not a member of this company."
+msgstr "Користувач не є членом цієї компанії."
+
+#: .\company\models.py:52 .\company\models.py:58 .\company\models.py:67
+#: .\company\models.py:92
+msgid "company"
+msgstr "компанія"
+
+#: .\company\models.py:53
+msgid "companies"
+msgstr "компанії"
+
+#: .\company\models.py:57
+msgid "member"
+msgstr "учасник"
+
+#: .\company\models.py:63
+msgid "recipient"
+msgstr "отримувач"
+
+#: .\company\models.py:69 .\company\models.py:94
+msgid "status"
+msgstr "статус"
+
+#: .\company\models.py:76 .\company\models.py:101
+msgid "The request has already been processed."
+msgstr "Запит уже було оброблено."
+
+#: .\company\models.py:91
+msgid "sender"
+msgstr "відправник"
+
+#: .\company\views.py:59 .\company\views.py:64
+msgid "User removed from the company."
+msgstr "Користувач видалений з компанії."
 
 #: .\internship_meduzzen_backend\settings.py:147
 msgid "English"
@@ -184,7 +221,7 @@ msgstr ""
 "Ви отримали цей електронний лист, оскільки надіслали запит на скидання "
 "юзернейма для свогоакаунта на %(site_name)s."
 
-#: .\user\models.py:22
+#: .\user\models.py:23
 msgid "avatar"
 msgstr "аватар"
 

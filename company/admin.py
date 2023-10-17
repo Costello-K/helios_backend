@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Company
+from .models import Company, CompanyMember, InvitationToCompany, RequestToCompany
 
 
 # Add the Company model for the admin interface
@@ -24,4 +24,67 @@ class CompanyAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Company', {'fields': ('name', )}),
         ('Info', {'fields': ('owner', 'visibility', 'description')}),
+    )
+
+
+@admin.register(CompanyMember)
+class CompanyMemberAdmin(admin.ModelAdmin):
+    list_display = ('company', 'member', 'created_at', 'updated_at')
+    list_display_links = ('company', )
+    list_editable = ('member', )
+    search_fields = ('created_at', 'updated_at')
+    list_filter = ('company', 'member', 'created_at', 'updated_at')
+    list_per_page = 50
+    list_max_show_all = 200
+
+    add_fieldsets = (
+        ('Company', {'fields': ('company', )}),
+        ('Info', {'fields': ('member', )}),
+    )
+
+    fieldsets = (
+        ('Company', {'fields': ('company', )}),
+        ('Info', {'fields': ('member', )}),
+    )
+
+
+@admin.register(InvitationToCompany)
+class InvitationToCompanyAdmin(admin.ModelAdmin):
+    list_display = ('company', 'recipient', 'status', 'created_at', 'updated_at')
+    list_display_links = ('company', )
+    list_editable = ('recipient', )
+    search_fields = ('created_at', 'updated_at')
+    list_filter = ('company', 'recipient', 'status', 'created_at', 'updated_at')
+    list_per_page = 50
+    list_max_show_all = 200
+
+    add_fieldsets = (
+        ('Company', {'fields': ('company', )}),
+        ('Info', {'fields': ('recipient', 'status')}),
+    )
+
+    fieldsets = (
+        ('Company', {'fields': ('company', )}),
+        ('Info', {'fields': ('recipient', 'status')}),
+    )
+
+
+@admin.register(RequestToCompany)
+class RequestToCompanyAdmin(admin.ModelAdmin):
+    list_display = ('company', 'sender', 'status', 'created_at', 'updated_at')
+    list_display_links = ('company', )
+    list_editable = ('sender', )
+    search_fields = ('created_at', 'updated_at')
+    list_filter = ('company', 'sender', 'status', 'created_at', 'updated_at')
+    list_per_page = 50
+    list_max_show_all = 200
+
+    add_fieldsets = (
+        ('Company', {'fields': ('company', )}),
+        ('Info', {'fields': ('sender', 'status')}),
+    )
+
+    fieldsets = (
+        ('Company', {'fields': ('company', )}),
+        ('Info', {'fields': ('sender', 'status')}),
     )
