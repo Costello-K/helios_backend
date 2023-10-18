@@ -4,6 +4,9 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
+from common.enums import RequestStatus
+from common.factories import CompanyFactory, RequestToCompanyFactory, UserFactory
+
 User = get_user_model()
 
 
@@ -176,3 +179,122 @@ class UserTests(TestCase):
         self.assertEqual(response.data['count'], 2)
         self.assertEqual(response.data['results'][0]['username'], self.user_1.username)
         self.assertEqual(response.data['results'][1]['username'], self.user_2.username)
+
+
+class RequestToCompanyTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+        self.user_1 = UserFactory()
+        self.user_2 = UserFactory()
+        self.user_3 = UserFactory()
+        self.user_4 = UserFactory()
+        self.user_5 = UserFactory()
+
+        self.company_1 = CompanyFactory(owner=self.user_1)
+        self.company_2 = CompanyFactory(owner=self.user_2)
+        self.company_3 = CompanyFactory(owner=self.user_3)
+        self.company_4 = CompanyFactory(owner=self.user_4)
+
+        self.request_1_2 = RequestToCompanyFactory(sender=self.user_1, company=self.company_2)
+        self.request_1_3 = RequestToCompanyFactory(sender=self.user_1, company=self.company_3)
+        self.request_1_4 = RequestToCompanyFactory(sender=self.user_1, company=self.company_4)
+        self.request_2_1 = RequestToCompanyFactory(sender=self.user_2, company=self.company_1)
+        self.request_3_1 = RequestToCompanyFactory(sender=self.user_3, company=self.company_1)
+        self.request_4_1 = RequestToCompanyFactory(sender=self.user_4, company=self.company_1)
+
+        self.url_request_1_2 = reverse('user-request-detail', args=[self.user_1.id, self.request_1_2.id])
+
+    def test_request_list(self):
+        self.client.force_authenticate(user=self.user_1)
+        url = reverse('company-request-list', args=[self.company_1.id])
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue('results' in response.data)
+
+        expected_requests = [self.request_2_1.id, self.request_3_1.id, self.request_4_1.id]
+        request_from_response = [invitation['id'] for invitation in response.data['results']]
+        self.assertEqual(sorted(request_from_response), sorted(expected_requests))
+
+    def test_non_owner_request_list(self):
+        self.client.force_authenticate(user=self.user_2)
+        url = reverse('company-request-list', args=[self.company_1.id])
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_my_request_list(self):
+        self.client.force_authenticate(user=self.user_1)
+        url = reverse('user-requests', args=[self.user_1.id])
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue('results' in response.data)
+
+        expected_requests = [self.request_1_2.id, self.request_1_3.id, self.request_1_4.id]
+        request_from_response = [request['id'] for request in response.data['results']]
+        self.assertEqual(sorted(request_from_response), sorted(expected_requests))
+
+    def test_create_request(self):
+        self.client.force_authenticate(user=self.user_5)
+        url = reverse('user-request-detail', args=[self.user_5.id, self.company_1.id])
+
+        response = self.client.post(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['sender']['id'], self.user_5.id)
+
+    def test_update_approve_request(self):
+        self.client.force_authenticate(user=self.user_2)
+        updated_data = {'confirm': True}
+
+        response = self.client.patch(self.url_request_1_2, updated_data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['status'], RequestStatus.APPROVED.value)
+
+    def test_sender_update_request(self):
+        self.client.force_authenticate(user=self.user_1)
+        updated_data = {'confirm': True}
+
+        response = self.client.patch(self.url_request_1_2, updated_data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_anyone_update_request(self):
+        self.client.force_authenticate(user=self.user_5)
+        updated_data = {'confirm': True}
+
+        response = self.client.patch(self.url_request_1_2, updated_data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_update_reject_request(self):
+        self.client.force_authenticate(user=self.user_2)
+        updated_data = {'confirm': False}
+
+        response = self.client.patch(self.url_request_1_2, updated_data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['status'], RequestStatus.REJECTED.value)
+
+    def test_cancell_request(self):
+        self.client.force_authenticate(user=self.user_1)
+        url = reverse('user-request-cancell', args=[self.user_1.id, self.company_2.id])
+
+        response = self.client.post(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['status'], RequestStatus.CANCELLED.value)
+
+    def test_non_sender_cancell_request(self):
+        self.client.force_authenticate(user=self.user_2)
+        url = reverse('user-request-cancell', args=[self.user_1.id, self.company_2.id])
+
+        response = self.client.post(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

@@ -1,7 +1,11 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
+
+from company.models import Company
+from user.models import RequestToCompany
 
 User = get_user_model()
 
@@ -111,3 +115,34 @@ class UserDetailSerializer(UserSerializer):
             return user.avatar.url
         # if the image does not exist, we send the image for the user by default
         return settings.DEFAULT_USER_AVATAR_URL
+
+
+class RequestToCompanySerializer(serializers.ModelSerializer):
+    from company.serializers import CompanySerializer
+
+    company = CompanySerializer(read_only=True)
+    sender = UserDetailSerializer(read_only=True)
+
+    class Meta:
+        model = RequestToCompany
+        fields = '__all__'
+
+    def create(self, validated_data):
+        company_pk = self.context['request'].parser_context['kwargs']['pk']
+
+        validated_data['company'] = get_object_or_404(Company, pk=company_pk)
+        validated_data['sender'] = self.context['request'].user
+
+        invitation = RequestToCompany.objects.create(**validated_data)
+        return invitation
+
+    def update(self, instance, validated_data):
+        # company owner approved or rejected the join request with data = { 'confirm': true | false }
+        confirm = self.context['request'].data['confirm']
+
+        if confirm:
+            instance.approve()
+        else:
+            instance.reject()
+
+        return instance

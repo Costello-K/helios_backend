@@ -1,11 +1,39 @@
-from django.urls import include, path
-from rest_framework.routers import DefaultRouter
+from django.urls import path
 
-from .views import CompanyViewSet
+from user.views import RequestToCompanyViewSet
 
-router = DefaultRouter()
-router.register('', CompanyViewSet, basename='company')
+from .views import CompanyViewSet, InvitationToCompanyViewSet
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', CompanyViewSet.as_view({'get': 'list', 'post': 'create'}), name='company-list'),
+    path(
+        '<int:pk>/',
+        CompanyViewSet.as_view({'get': 'retrieve', 'patch': 'partial_update', 'delete': 'destroy'}),
+        name='company-detail',
+    ),
+    path('<int:pk>/members/', CompanyViewSet.as_view({'get': 'members'}), name='company-members'),
+    path('<int:pk>/remove_me/', CompanyViewSet.as_view({'delete': 'remove_me'}), name='company-remove-me'),
+    path(
+        '<int:company_pk>/remove_user/<int:pk>/',
+        CompanyViewSet.as_view({'delete': 'remove_user'}),
+        name='company-remove-user',
+    ),
+
+    path(
+        '<int:company_pk>/invitations/',
+        InvitationToCompanyViewSet.as_view({'get': 'list'}),
+        name='company-invitation-list',
+    ),
+    path(
+        '<int:company_pk>/invitations/<int:pk>/',
+        InvitationToCompanyViewSet.as_view({'get': 'retrieve', 'patch': 'partial_update', 'post': 'create'}),
+        name='company-invitation-detail',
+    ),
+    path(
+        '<int:company_pk>/invitations/<int:pk>/revoke/',
+        InvitationToCompanyViewSet.as_view({'post': 'revoke'}),
+        name='company-invitation-revoke',
+    ),
+
+    path('<int:company_pk>/requests/', RequestToCompanyViewSet.as_view({'get': 'list'}), name='company-request-list'),
 ]

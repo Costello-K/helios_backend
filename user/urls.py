@@ -1,11 +1,26 @@
-from django.urls import include, path
-from rest_framework.routers import DefaultRouter
+from django.urls import path
 
-from .views import UserViewSet
-
-router = DefaultRouter()
-router.register('', UserViewSet, basename='user')
+from .views import RequestToCompanyViewSet, UserViewSet
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', UserViewSet.as_view({'get': 'list', 'post': 'create'}), name='user-list'),
+    path(
+        '<int:pk>/',
+        UserViewSet.as_view({'get': 'retrieve', 'patch': 'partial_update', 'delete': 'destroy'}),
+        name='user-detail',
+    ),
+
+    path('<int:pk>/requests/', UserViewSet.as_view({'get': 'requests'}), name='user-requests'),
+    path('<int:pk>/invitations/', UserViewSet.as_view({'get': 'invitations'}), name='user-invitations'),
+
+    path(
+        '<int:user_pk>/requests/<int:pk>/',
+        RequestToCompanyViewSet.as_view({'get': 'retrieve', 'patch': 'partial_update', 'post': 'create'}),
+        name='user-request-detail',
+    ),
+    path(
+        '<int:user_pk>/requests/<int:pk>/cancell/',
+        RequestToCompanyViewSet.as_view({'post': 'cancell'}),
+        name='user-request-cancell',
+    ),
 ]
