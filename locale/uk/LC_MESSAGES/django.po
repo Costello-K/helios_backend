@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-17 02:48+0300\n"
+"POT-Creation-Date: 2023-10-18 17:01+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,64 +21,76 @@ msgstr ""
 "100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || "
 "(n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
 
-#: .\company\models.py:14
+#: .\company\models.py:12
 msgid "name"
 msgstr "назва"
 
-#: .\company\models.py:15
+#: .\company\models.py:13
 msgid "description"
 msgstr "опис"
 
-#: .\company\models.py:16
+#: .\company\models.py:14
 msgid "visibility"
 msgstr "видимість"
 
-#: .\company\models.py:17
+#: .\company\models.py:15
 msgid "owner"
 msgstr "власник"
 
-#: .\company\models.py:24 .\company\models.py:82 .\company\models.py:107
+#: .\company\models.py:22 .\company\models.py:85 .\user\models.py:57
 msgid "The user is already a member of the company."
 msgstr "Користувач вже є учасником компанії."
 
-#: .\company\models.py:26 .\company\serializers.py:51
+#: .\company\models.py:24 .\company\serializers.py:51
 msgid "The owner cannot be a member of the company."
 msgstr "Власник не може бути членом компанії."
 
-#: .\company\models.py:49
+#: .\company\models.py:47
 msgid "The user is not a member of this company."
 msgstr "Користувач не є членом цієї компанії."
 
-#: .\company\models.py:52 .\company\models.py:58 .\company\models.py:67
-#: .\company\models.py:92
+#: .\company\models.py:50 .\company\models.py:56 .\company\models.py:70
+#: .\user\models.py:42
 msgid "company"
 msgstr "компанія"
 
-#: .\company\models.py:53
+#: .\company\models.py:51
 msgid "companies"
 msgstr "компанії"
 
-#: .\company\models.py:57
+#: .\company\models.py:55
 msgid "member"
 msgstr "учасник"
 
-#: .\company\models.py:63
+#: .\company\models.py:59
+msgid "company member"
+msgstr "учасник компанії"
+
+#: .\company\models.py:60
+msgid "company members"
+msgstr "учасники компанії"
+
+#: .\company\models.py:66
 msgid "recipient"
 msgstr "отримувач"
 
-#: .\company\models.py:69 .\company\models.py:94
+#: .\company\models.py:72 .\user\models.py:44
 msgid "status"
 msgstr "статус"
 
-#: .\company\models.py:76 .\company\models.py:101
-msgid "The request has already been processed."
-msgstr "Запит уже було оброблено."
+#: .\company\models.py:79 .\company\models.py:89 .\company\models.py:95
+msgid "The invitation has already been processed."
+msgstr "Запрошення вже було опрацьоване."
 
-#: .\company\models.py:91
-msgid "sender"
-msgstr "відправник"
+#: .\company\models.py:100
+msgid "invitation to company"
+msgstr "запрошення в компанію"
 
-#: .\company\views.py:59 .\company\views.py:64
+#: .\company\models.py:101
+msgid "invitations to companies"
+msgstr "запрошення в компанії"
+
+#: .\company\views.py:55 .\company\views.py:60
 msgid "User removed from the company."
 msgstr "Користувач видалений з компанії."
 
@@ -221,26 +233,46 @@ msgstr ""
 "Ви отримали цей електронний лист, оскільки надіслали запит на скидання "
 "юзернейма для свогоакаунта на %(site_name)s."
 
-#: .\user\models.py:23
+#: .\user\models.py:26
 msgid "avatar"
 msgstr "аватар"
 
-#: .\user\serializers.py:44
+#: .\user\models.py:41
+msgid "sender"
+msgstr "відправник"
+
+#: .\user\models.py:51 .\user\models.py:61 .\user\models.py:67
+msgid "The request has already been processed."
+msgstr "Запит вже було опрацьовано."
+
+#: .\user\models.py:72
+msgid "request to company"
+msgstr "запит до компанії"
+
+#: .\user\models.py:73
+msgid "requests to companies"
+msgstr "запити до компаній"
+
+#: .\user\serializers.py:48
 msgid "Password is required for user creation."
 msgstr "Поле пароль є обов'язковим"
 
-#: .\user\serializers.py:49
+#: .\user\serializers.py:53
 msgid "Password and confirm_password are different."
 msgstr "Пароль та підтвердження пароля не співпадають."
 
-#: .\user\serializers.py:54
+#: .\user\serializers.py:58
 msgid "Email field is required."
 msgstr "Поле емейл є обов'язковим."
 
-#: .\user\serializers.py:59
+#: .\user\serializers.py:63
 msgid "Email is already in use."
 msgstr "Емейл вже існує."
 
-#: .\user\serializers.py:64
+#: .\user\serializers.py:68
 msgid "Maximum image size allowed is {} Mb"
 msgstr "Максимальний допустимий розмір файлу {} Mб"
+
+#: .\user\views.py:41 .\user\views.py:48
+msgid "Page not found."
+msgstr "Сторінку не знайдено."

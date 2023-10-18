@@ -4,9 +4,10 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from common.constants import InvitationStatus, RequestStatus
+from common.enums import InvitationStatus
+from common.factories import CompanyFactory, CompanyMemberFactory, InvitationToCompanyFactory, UserFactory
 
-from .models import Company, CompanyMember, InvitationToCompany, RequestToCompany
+from .models import Company, CompanyMember
 
 User = get_user_model()
 
@@ -15,17 +16,17 @@ class CompanyTests(TestCase):
     def setUp(self):
         self.client = APIClient()
 
-        self.user_1 = User.objects.create_user(username='user1', password='password')
-        self.user_2 = User.objects.create_user(username='user2', password='password')
-        self.user_3 = User.objects.create_user(username='user3', password='password')
-        self.user_4 = User.objects.create_user(username='user4', password='password')
+        self.user_1 = UserFactory()
+        self.user_2 = UserFactory()
+        self.user_3 = UserFactory()
+        self.user_4 = UserFactory()
 
-        self.company_1 = Company.objects.create(name='Company 1', owner=self.user_1, description='description_1')
-        self.company_2 = Company.objects.create(name='Company 2', owner=self.user_2)
+        self.company_1 = CompanyFactory(owner=self.user_1)
+        self.company_2 = CompanyFactory(owner=self.user_2)
 
-        CompanyMember.objects.create(company=self.company_2, member=self.user_1)
-        CompanyMember.objects.create(company=self.company_2, member=self.user_3)
-        CompanyMember.objects.create(company=self.company_2, member=self.user_4)
+        CompanyMemberFactory(company=self.company_2, member=self.user_1)
+        CompanyMemberFactory(company=self.company_2, member=self.user_3)
+        CompanyMemberFactory(company=self.company_2, member=self.user_4)
 
         self.company_1_url = reverse('company-detail', args=[self.company_1.id])
 
@@ -39,6 +40,7 @@ class CompanyTests(TestCase):
         company_data = {'name': 'New Company'}
 
         response = self.client.post(reverse('company-list'), company_data, format='json')
+        print(response)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['name'], company_data['name'])
@@ -46,6 +48,7 @@ class CompanyTests(TestCase):
 
     def test_read_company(self):
         self.client.force_authenticate(user=self.user_2)
+
         response = self.client.get(self.company_1_url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -73,6 +76,7 @@ class CompanyTests(TestCase):
         response = self.client.delete(self.company_1_url)
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Company.objects.filter(id=self.company_1.id).exists())
 
     def test_delete_company_non_company_owner(self):
         self.client.force_authenticate(user=self.user_2)
@@ -80,18 +84,20 @@ class CompanyTests(TestCase):
         response = self.client.delete(self.company_1_url)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertTrue(Company.objects.filter(id=self.company_1.id).exists())
 
     def test_get_company_members(self):
         self.client.force_authenticate(user=self.user_2)
         url = reverse('company-members', args=[self.company_2.id])
 
         response = self.client.get(url)
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue('results' in response.data)
-        results = response.data['results']
-        self.assertIn(self.user_1.id, [member['member']['id'] for member in results])
-        self.assertIn(self.user_3.id, [member['member']['id'] for member in results])
-        self.assertIn(self.user_4.id, [member['member']['id'] for member in results])
+
+        expected_members = [self.user_1.id, self.user_3.id, self.user_4.id]
+        members_from_response = [member['member']['id'] for member in response.data['results']]
+        self.assertEqual(sorted(members_from_response), sorted(expected_members))
 
     def test_leave_company(self):
         self.client.force_authenticate(user=self.user_3)
@@ -125,34 +131,29 @@ class InvitationToCompanyTests(TestCase):
     def setUp(self):
         self.client = APIClient()
 
-        self.user_1 = User.objects.create_user(username='user1', password='password')
-        self.user_2 = User.objects.create_user(username='user2', password='password')
-        self.user_3 = User.objects.create_user(username='user3', password='password')
-        self.user_4 = User.objects.create_user(username='user4', password='password')
-        self.user_5 = User.objects.create_user(username='user5', password='password')
+        self.user_1 = UserFactory()
+        self.user_2 = UserFactory()
+        self.user_3 = UserFactory()
+        self.user_4 = UserFactory()
+        self.user_5 = UserFactory()
 
-        self.company_1 = Company.objects.create(name='Company 1', owner=self.user_1)
-        self.company_2 = Company.objects.create(name='Company 2', owner=self.user_2)
-        self.company_3 = Company.objects.create(name='Company 3', owner=self.user_3)
-        self.company_4 = Company.objects.create(name='Company 4', owner=self.user_4)
+        self.company_1 = CompanyFactory(owner=self.user_1)
+        self.company_2 = CompanyFactory(owner=self.user_2)
+        self.company_3 = CompanyFactory(owner=self.user_3)
+        self.company_4 = CompanyFactory(owner=self.user_4)
 
-        self.invitation_1_2 = InvitationToCompany.objects.create(company=self.company_1, recipient=self.user_2)
-        self.invitation_1_3 = InvitationToCompany.objects.create(company=self.company_1, recipient=self.user_3)
-        self.invitation_1_4 = InvitationToCompany.objects.create(company=self.company_1, recipient=self.user_4)
-        self.invitation_2_1 = InvitationToCompany.objects.create(company=self.company_2, recipient=self.user_1)
-        self.invitation_3_1 = InvitationToCompany.objects.create(company=self.company_3, recipient=self.user_1)
-        self.invitation_4_1 = InvitationToCompany.objects.create(company=self.company_4, recipient=self.user_1)
+        self.invitation_1_2 = InvitationToCompanyFactory(company=self.company_1, recipient=self.user_2)
+        self.invitation_1_3 = InvitationToCompanyFactory(company=self.company_1, recipient=self.user_3)
+        self.invitation_1_4 = InvitationToCompanyFactory(company=self.company_1, recipient=self.user_4)
+        self.invitation_2_1 = InvitationToCompanyFactory(company=self.company_2, recipient=self.user_1)
+        self.invitation_3_1 = InvitationToCompanyFactory(company=self.company_3, recipient=self.user_1)
+        self.invitation_4_1 = InvitationToCompanyFactory(company=self.company_4, recipient=self.user_1)
 
         self.url_invitation_company_1 = reverse('company-invitation-list', args=[self.company_1.id])
         self.url_invitation_1_2 = reverse('company-invitation-detail', args=[self.company_1.id, self.invitation_1_2.id])
 
-        self.invitation_data = {
-            'recipient': self.user_5.id,
-            'company': self.company_1.id,
-        }
-
     def test_invitation_list(self):
-        self.client.force_authenticate(user=self.user_2)
+        self.client.force_authenticate(user=self.user_1)
 
         response = self.client.get(self.url_invitation_company_1)
 
@@ -163,9 +164,16 @@ class InvitationToCompanyTests(TestCase):
         invitation_from_response = [invitation['id'] for invitation in response.data['results']]
         self.assertEqual(sorted(invitation_from_response), sorted(expected_invitations))
 
+    def test_non_owner_invitation_list(self):
+        self.client.force_authenticate(user=self.user_2)
+
+        response = self.client.get(self.url_invitation_company_1)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
     def test_my_invitation_list(self):
         self.client.force_authenticate(user=self.user_1)
-        url = reverse('user-my-invitations')
+        url = reverse('user-invitations', args=[self.user_1.id])
 
         response = self.client.get(url)
 
@@ -178,16 +186,18 @@ class InvitationToCompanyTests(TestCase):
 
     def test_create_invitation(self):
         self.client.force_authenticate(user=self.user_1)
+        url = reverse('company-invitation-detail', args=[self.company_1.id, self.user_5.id])
 
-        response = self.client.post(self.url_invitation_company_1, self.invitation_data, format='json')
+        response = self.client.post(url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['recipient']['id'], self.user_5.id)
 
     def test_non_owner_create_invitation(self):
         self.client.force_authenticate(user=self.user_3)
+        url = reverse('company-invitation-detail', args=[self.company_1.id, self.user_5.id])
 
-        response = self.client.post(self.url_invitation_company_1, self.invitation_data, format='json')
+        response = self.client.post(url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -216,123 +226,28 @@ class InvitationToCompanyTests(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_update_reject_invitation(self):
+    def test_update_decline_invitation(self):
         self.client.force_authenticate(user=self.user_2)
         updated_data = {'confirm': False}
 
         response = self.client.patch(self.url_invitation_1_2, updated_data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['status'], InvitationStatus.REJECTED.value)
+        self.assertEqual(response.data['status'], InvitationStatus.DECLINED.value)
 
-    def test_cancel_invitation(self):
-        self.client.force_authenticate(user=self.user_1)
-
-        response = self.client.delete(self.url_invitation_1_2)
-
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-
-
-class RequestToCompanyTests(TestCase):
-    def setUp(self):
-        self.client = APIClient()
-
-        self.user_1 = User.objects.create_user(username='user1', password='password')
-        self.user_2 = User.objects.create_user(username='user2', password='password')
-        self.user_3 = User.objects.create_user(username='user3', password='password')
-        self.user_4 = User.objects.create_user(username='user4', password='password')
-        self.user_5 = User.objects.create_user(username='user5', password='password')
-
-        self.company_1 = Company.objects.create(name='Company 1', owner=self.user_1)
-        self.company_2 = Company.objects.create(name='Company 2', owner=self.user_2)
-        self.company_3 = Company.objects.create(name='Company 3', owner=self.user_3)
-        self.company_4 = Company.objects.create(name='Company 4', owner=self.user_4)
-
-        self.request_1_2 = RequestToCompany.objects.create(sender=self.user_1, company=self.company_2)
-        self.request_1_3 = RequestToCompany.objects.create(sender=self.user_1, company=self.company_3)
-        self.request_1_4 = RequestToCompany.objects.create(sender=self.user_1, company=self.company_4)
-        self.request_2_1 = RequestToCompany.objects.create(sender=self.user_2, company=self.company_1)
-        self.request_3_1 = RequestToCompany.objects.create(sender=self.user_3, company=self.company_1)
-        self.request_4_1 = RequestToCompany.objects.create(sender=self.user_4, company=self.company_1)
-
-        self.url_request_company_1 = reverse('company-request-list', args=[self.company_1.id])
-        self.url_request_1_2 = reverse('company-request-detail', args=[self.company_2.id, self.request_1_2.id])
-
-        self.request_data = {
-            'sender': self.user_5.id,
-            'company': self.company_1.id,
-        }
-
-    def test_request_list(self):
-        self.client.force_authenticate(user=self.user_1)
-
-        response = self.client.get(self.url_request_company_1)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue('results' in response.data)
-
-        expected_requests = [self.request_2_1.id, self.request_3_1.id, self.request_4_1.id]
-        request_from_response = [invitation['id'] for invitation in response.data['results']]
-        self.assertEqual(sorted(request_from_response), sorted(expected_requests))
-
-    def test_my_request_list(self):
-        self.client.force_authenticate(user=self.user_1)
-        url = reverse('user-my-requests')
-
-        response = self.client.get(url)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue('results' in response.data)
-
-        expected_requests = [self.request_1_2.id, self.request_1_3.id, self.request_1_4.id]
-        request_from_response = [request['id'] for request in response.data['results']]
-        self.assertEqual(sorted(request_from_response), sorted(expected_requests))
-
-    def test_create_request(self):
-        self.client.force_authenticate(user=self.user_5)
-
-        response = self.client.post(self.url_request_company_1, self.request_data, format='json')
-
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['sender']['id'], self.user_5.id)
-
-    def test_update_approve_request(self):
+    def test_revoke_invitation(self):
         self.client.force_authenticate(user=self.user_2)
-        updated_data = {'confirm': True}
+        url = reverse('company-invitation-revoke', args=[self.company_2.id, self.user_1.id])
 
-        response = self.client.patch(self.url_request_1_2, updated_data, format='json')
+        response = self.client.post(url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['status'], RequestStatus.APPROVED.value)
+        self.assertEqual(response.data['status'], InvitationStatus.REVOKED.value)
 
-    def test_sender_update_request(self):
+    def test_non_owner_revoke_invitation(self):
         self.client.force_authenticate(user=self.user_1)
-        updated_data = {'confirm': True}
+        url = reverse('company-invitation-revoke', args=[self.company_2.id, self.user_1.id])
 
-        response = self.client.patch(self.url_request_1_2, updated_data, format='json')
+        response = self.client.post(url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_anyone_update_request(self):
-        self.client.force_authenticate(user=self.user_5)
-        updated_data = {'confirm': True}
-
-        response = self.client.patch(self.url_request_1_2, updated_data, format='json')
-
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_update_declined_request(self):
-        self.client.force_authenticate(user=self.user_2)
-        updated_data = {'confirm': False}
-
-        response = self.client.patch(self.url_request_1_2, updated_data, format='json')
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['status'], RequestStatus.DECLINED.value)
-
-    def test_cancel_request(self):
-        self.client.force_authenticate(user=self.user_1)
-
-        response = self.client.delete(self.url_request_1_2)
-
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

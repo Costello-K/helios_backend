@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Company, CompanyMember, InvitationToCompany, RequestToCompany
+from .models import Company, CompanyMember, InvitationToCompany
 
 
 # Add the Company model for the admin interface
@@ -66,25 +66,4 @@ class InvitationToCompanyAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Company', {'fields': ('company', )}),
         ('Info', {'fields': ('recipient', 'status')}),
-    )
-
-
-@admin.register(RequestToCompany)
-class RequestToCompanyAdmin(admin.ModelAdmin):
-    list_display = ('company', 'sender', 'status', 'created_at', 'updated_at')
-    list_display_links = ('company', )
-    list_editable = ('sender', )
-    search_fields = ('created_at', 'updated_at')
-    list_filter = ('company', 'sender', 'status', 'created_at', 'updated_at')
-    list_per_page = 50
-    list_max_show_all = 200
-
-    add_fieldsets = (
-        ('Company', {'fields': ('company', )}),
-        ('Info', {'fields': ('sender', 'status')}),
-    )
-
-    fieldsets = (
-        ('Company', {'fields': ('company', )}),
-        ('Info', {'fields': ('sender', 'status')}),
     )

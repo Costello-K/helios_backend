@@ -5,7 +5,7 @@ from rest_framework import serializers
 
 from user.serializers import UserDetailSerializer
 
-from .models import Company, CompanyMember, InvitationToCompany, RequestToCompany
+from .models import Company, CompanyMember, InvitationToCompany
 
 User = get_user_model()
 
@@ -41,7 +41,7 @@ class InvitationToCompanySerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         company_pk = self.context['request'].parser_context['kwargs']['company_pk']
-        recipient_pk = self.initial_data['recipient']
+        recipient_pk = self.context['request'].parser_context['kwargs']['pk']
 
         company = get_object_or_404(Company, pk=company_pk)
         recipient = get_object_or_404(User, pk=recipient_pk)
@@ -58,41 +58,12 @@ class InvitationToCompanySerializer(serializers.ModelSerializer):
         return invitation
 
     def update(self, instance, validated_data):
-        # user accepted or rejected the join request with data = { 'confirm': true | false }
+        # user accepted or declined the join request with data = { 'confirm': true | false }
         confirm = self.context['request'].data['confirm']
 
         if confirm:
             instance.accept()
         else:
-            instance.reject()
-
-        return instance
-
-
-class RequestToCompanySerializer(serializers.ModelSerializer):
-    company = CompanySerializer(read_only=True)
-    sender = UserDetailSerializer(read_only=True)
-
-    class Meta:
-        model = RequestToCompany
-        fields = '__all__'
-
-    def create(self, validated_data):
-        company_pk = self.context['request'].parser_context['kwargs']['company_pk']
-
-        validated_data['company'] = get_object_or_404(Company, pk=company_pk)
-        validated_data['sender'] = self.context['request'].user
-
-        invitation = RequestToCompany.objects.create(**validated_data)
-        return invitation
-
-    def update(self, instance, validated_data):
-        # company owner approved or declined the join request with data = { 'confirm': true | false }
-        confirm = self.context['request'].data['confirm']
-
-        if confirm:
-            instance.approved()
-        else:
-            instance.declined()
+            instance.decline()
 
         return instance

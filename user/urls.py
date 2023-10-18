@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import UserViewSet
+from .views import RequestToCompanyViewSet, UserViewSet
 
 urlpatterns = [
     path('', UserViewSet.as_view({'get': 'list', 'post': 'create'}), name='user-list'),
@@ -9,6 +9,18 @@ urlpatterns = [
         UserViewSet.as_view({'get': 'retrieve', 'patch': 'partial_update', 'delete': 'destroy'}),
         name='user-detail',
     ),
-    path('me/requests/', UserViewSet.as_view({'get': 'my_requests'}), name='user-my-requests'),
-    path('me/invitations/', UserViewSet.as_view({'get': 'my_invitations'}), name='user-my-invitations'),
+
+    path('<int:pk>/requests/', UserViewSet.as_view({'get': 'requests'}), name='user-requests'),
+    path('<int:pk>/invitations/', UserViewSet.as_view({'get': 'invitations'}), name='user-invitations'),
+
+    path(
+        '<int:user_pk>/requests/<int:pk>/',
+        RequestToCompanyViewSet.as_view({'get': 'retrieve', 'patch': 'partial_update', 'post': 'create'}),
+        name='user-request-detail',
+    ),
+    path(
+        '<int:user_pk>/requests/<int:pk>/cancell/',
+        RequestToCompanyViewSet.as_view({'post': 'cancell'}),
+        name='user-request-cancell',
+    ),
 ]

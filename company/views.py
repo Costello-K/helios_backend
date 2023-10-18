@@ -10,17 +10,15 @@ from common.permissions import (
     IsCompanyOwner,
     IsCompanyOwnerCreateInvitation,
     IsInvitationRecipient,
-    IsRequestSender,
     ReadOnly,
 )
 from common.views import get_serializer_paginate
 
-from .models import Company, InvitationToCompany, RequestToCompany
+from .models import Company, InvitationToCompany
 from .serializers import (
     CompanyMemberSerializer,
     CompanySerializer,
     InvitationToCompanySerializer,
-    RequestToCompanySerializer,
 )
 
 User = get_user_model()
@@ -57,7 +55,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
         return Response({'message': _('User removed from the company.')}, status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=['delete'], permission_classes=[IsAuthenticated])
-    def remove_me(self, request,  pk=None):
+    def remove_me(self, request, pk=None):
         Company.remove_member(pk, request.user)
         return Response({'message': _('User removed from the company.')}, status=status.HTTP_204_NO_CONTENT)
 
@@ -73,36 +71,20 @@ class InvitationToCompanyViewSet(viewsets.ModelViewSet):
             .order_by(*self.ordering)
 
     def get_permissions(self):
-        if self.action == 'create':
+        if self.action in ['create', 'revoke']:
             permission_classes = [IsCompanyOwnerCreateInvitation]
         elif self.action in ['partial_update', 'update']:
             permission_classes = [IsInvitationRecipient]
-        elif self.action in ['destroy', 'list']:
+        elif self.action == 'list':
             permission_classes = [IsCompanyOwner]
         else:
             permission_classes = [IsCompanyOwner | IsInvitationRecipient]
 
         return [permission() for permission in permission_classes]
 
-
-class RequestToCompanyViewSet(viewsets.ModelViewSet):
-    serializer_class = RequestToCompanySerializer
-    ordering = ('created_at',)
-
-    def get_queryset(self):
-        company_pk = self.kwargs.get('company_pk')
-        return RequestToCompany.objects.all()\
-            .filter(company_id=company_pk)\
-            .order_by(*self.ordering)
-
-    def get_permissions(self):
-        if self.action == 'create':
-            permission_classes = [IsAuthenticated]
-        elif self.action in ['partial_update', 'update', 'list']:
-            permission_classes = [IsCompanyOwner]
-        elif self.action == 'destroy':
-            permission_classes = [IsRequestSender]
-        else:
-            permission_classes = [IsCompanyOwner | IsRequestSender]
-
-        return [permission() for permission in permission_classes]
+    @action(detail=True, methods=['post'])
+    def revoke(self, request, company_pk=None, pk=None):
+        invitation = get_object_or_404(InvitationToCompany, company_id=company_pk, recipient_id=pk)
+        invitation.revoke()
+        serializer = self.serializer_class(invitation)
+        return Response(serializer.data, status=status.HTTP_200_OK)

@@ -1,6 +1,8 @@
 from django.urls import path
 
-from .views import CompanyViewSet, InvitationToCompanyViewSet, RequestToCompanyViewSet
+from user.views import RequestToCompanyViewSet
+
+from .views import CompanyViewSet, InvitationToCompanyViewSet
 
 urlpatterns = [
     path('', CompanyViewSet.as_view({'get': 'list', 'post': 'create'}), name='company-list'),
@@ -19,23 +21,19 @@ urlpatterns = [
 
     path(
         '<int:company_pk>/invitations/',
-        InvitationToCompanyViewSet.as_view({'get': 'list', 'post': 'create'}),
+        InvitationToCompanyViewSet.as_view({'get': 'list'}),
         name='company-invitation-list',
     ),
     path(
         '<int:company_pk>/invitations/<int:pk>/',
-        InvitationToCompanyViewSet.as_view({'get': 'retrieve', 'patch': 'partial_update', 'delete': 'destroy'}),
+        InvitationToCompanyViewSet.as_view({'get': 'retrieve', 'patch': 'partial_update', 'post': 'create'}),
         name='company-invitation-detail',
     ),
+    path(
+        '<int:company_pk>/invitations/<int:pk>/revoke/',
+        InvitationToCompanyViewSet.as_view({'post': 'revoke'}),
+        name='company-invitation-revoke',
+    ),
 
-    path(
-        '<int:company_pk>/requests/',
-        RequestToCompanyViewSet.as_view({'get': 'list', 'post': 'create'}),
-        name='company-request-list',
-    ),
-    path(
-        '<int:company_pk>/requests/<int:pk>/',
-        RequestToCompanyViewSet.as_view({'get': 'retrieve', 'patch': 'partial_update', 'delete': 'destroy'}),
-        name='company-request-detail',
-    ),
+    path('<int:company_pk>/requests/', RequestToCompanyViewSet.as_view({'get': 'list'}), name='company-request-list'),
 ]

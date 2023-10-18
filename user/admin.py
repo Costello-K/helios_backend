@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 
+from user.models import RequestToCompany
+
 User = get_user_model()
 
 
@@ -24,4 +26,25 @@ class CustomUserAdmin(UserAdmin):
     fieldsets = (
         ('User', {'fields': ('username', 'first_name', 'last_name', 'email', 'password')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
+    )
+
+
+@admin.register(RequestToCompany)
+class RequestToCompanyAdmin(admin.ModelAdmin):
+    list_display = ('company', 'sender', 'status', 'created_at', 'updated_at')
+    list_display_links = ('company', )
+    list_editable = ('sender', )
+    search_fields = ('created_at', 'updated_at')
+    list_filter = ('company', 'sender', 'status', 'created_at', 'updated_at')
+    list_per_page = 50
+    list_max_show_all = 200
+
+    add_fieldsets = (
+        ('Company', {'fields': ('company', )}),
+        ('Info', {'fields': ('sender', 'status')}),
+    )
+
+    fieldsets = (
+        ('Company', {'fields': ('company', )}),
+        ('Info', {'fields': ('sender', 'status')}),
     )
