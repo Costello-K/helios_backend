@@ -7,6 +7,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from common.enums import RequestStatus
 from common.permissions import IsCompanyOwner, IsOwner, IsRequestSender, ReadOnly
 from common.views import get_serializer_paginate
 from company.serializers import InvitationToCompanySerializer
@@ -83,6 +84,6 @@ class RequestToCompanyViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def cancell(self, request, user_pk=None, pk=None):
         instance = get_object_or_404(RequestToCompany, company_id=pk, sender_id=user_pk)
-        instance.cancell()
+        instance.status_update(RequestStatus.CANCELLED.value)
         serializer = self.serializer_class(instance)
         return Response(serializer.data, status=status.HTTP_200_OK)

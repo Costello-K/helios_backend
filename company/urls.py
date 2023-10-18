@@ -12,6 +12,17 @@ urlpatterns = [
         name='company-detail',
     ),
     path('<int:pk>/members/', CompanyViewSet.as_view({'get': 'members'}), name='company-members'),
+    path('<int:company_pk>/admins/', CompanyViewSet.as_view({'get': 'admins'}), name='company-admins'),
+    path(
+        '<int:company_pk>/appoint_admin/<int:pk>/',
+        CompanyViewSet.as_view({'post': 'appoint_admin'}),
+        name='company-appoint-admin'
+    ),
+    path(
+        '<int:company_pk>/remove_admin/<int:pk>/',
+        CompanyViewSet.as_view({'post': 'remove_admin'}),
+        name='company-remove-admin'
+    ),
     path('<int:pk>/remove_me/', CompanyViewSet.as_view({'delete': 'remove_me'}), name='company-remove-me'),
     path(
         '<int:company_pk>/remove_user/<int:pk>/',

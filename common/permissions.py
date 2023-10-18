@@ -26,7 +26,7 @@ class IsCompanyOwner(permissions.BasePermission):
     Grants access to the object only to the company owner
     """
     def has_permission(self, request, view):
-        if view.action in ['remove_user', 'list']:
+        if view.action in ['remove_user', 'list', 'admins', 'appoint_admin', 'remove_admin']:
             company_pk = request.parser_context.get('kwargs', {}).get('company_pk')
 
             if company_pk is None:
