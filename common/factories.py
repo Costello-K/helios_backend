@@ -38,6 +38,13 @@ class CompanyMemberFactory(DjangoModelFactory):
     company = SubFactory(CompanyFactory)
 
 
+class CompanyMemberAdminFactory(CompanyMemberFactory):
+    class Meta:
+        model = CompanyMember
+
+    admin = True
+
+
 class InvitationToCompanyFactory(DjangoModelFactory):
     class Meta:
         model = InvitationToCompany

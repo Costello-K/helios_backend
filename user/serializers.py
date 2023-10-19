@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
+from common.enums import RequestStatus
 from company.models import Company
 from user.models import RequestToCompany
 
@@ -143,6 +144,6 @@ class RequestToCompanySerializer(serializers.ModelSerializer):
         if confirm:
             instance.approve()
         else:
-            instance.reject()
+            instance.status_update(RequestStatus.REJECTED.value)
 
         return instance

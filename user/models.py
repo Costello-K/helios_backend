@@ -49,23 +49,17 @@ class RequestToCompany(TimeStampedModel):
     def approve(self):
         if self.status != RequestStatus.PENDING.value:
             raise ObjectDoesNotExist({'message': _('The request has already been processed.')})
-        if not CompanyMember.objects.filter(company=self.company, member=self.sender).exists():
-            self.status = RequestStatus.APPROVED.value
-            self.save()
-            CompanyMember.objects.create(company=self.company, member=self.sender)
-        else:
+        if CompanyMember.objects.filter(company=self.company, member=self.sender).exists():
             raise ObjectAlreadyInInstance({'message': _('The user is already a member of the company.')})
 
-    def reject(self):
-        if self.status != RequestStatus.PENDING.value:
-            raise ObjectDoesNotExist({'message': _('The request has already been processed.')})
-        self.status = RequestStatus.REJECTED.value
-        self.save()
+        self.status_update(RequestStatus.APPROVED.value)
 
-    def cancell(self):
+        CompanyMember.objects.create(company=self.company, member=self.sender)
+
+    def status_update(self, status):
         if self.status != RequestStatus.PENDING.value:
             raise ObjectDoesNotExist({'message': _('The request has already been processed.')})
-        self.status = RequestStatus.CANCELLED.value
+        self.status = status
         self.save()
 
     class Meta:

@@ -29,22 +29,22 @@ class CompanyAdmin(admin.ModelAdmin):
 
 @admin.register(CompanyMember)
 class CompanyMemberAdmin(admin.ModelAdmin):
-    list_display = ('company', 'member', 'created_at', 'updated_at')
+    list_display = ('company', 'member', 'admin', 'created_at', 'updated_at')
     list_display_links = ('company', )
-    list_editable = ('member', )
+    list_editable = ('member', 'admin')
     search_fields = ('created_at', 'updated_at')
-    list_filter = ('company', 'member', 'created_at', 'updated_at')
+    list_filter = ('company', 'member', 'admin', 'created_at', 'updated_at')
     list_per_page = 50
     list_max_show_all = 200
 
     add_fieldsets = (
         ('Company', {'fields': ('company', )}),
-        ('Info', {'fields': ('member', )}),
+        ('Info', {'fields': ('member', 'admin')}),
     )
 
     fieldsets = (
         ('Company', {'fields': ('company', )}),
-        ('Info', {'fields': ('member', )}),
+        ('Info', {'fields': ('member', 'admin')}),
     )
 
 

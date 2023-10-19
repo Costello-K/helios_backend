@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
+from common.enums import InvitationStatus
 from user.serializers import UserDetailSerializer
 
 from .models import Company, CompanyMember, InvitationToCompany
@@ -64,6 +65,6 @@ class InvitationToCompanySerializer(serializers.ModelSerializer):
         if confirm:
             instance.accept()
         else:
-            instance.decline()
+            instance.status_update(InvitationStatus.DECLINED.value)
 
         return instance

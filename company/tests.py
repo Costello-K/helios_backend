@@ -5,7 +5,13 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from common.enums import InvitationStatus
-from common.factories import CompanyFactory, CompanyMemberFactory, InvitationToCompanyFactory, UserFactory
+from common.factories import (
+    CompanyFactory,
+    CompanyMemberAdminFactory,
+    CompanyMemberFactory,
+    InvitationToCompanyFactory,
+    UserFactory,
+)
 
 from .models import Company, CompanyMember
 
@@ -40,7 +46,6 @@ class CompanyTests(TestCase):
         company_data = {'name': 'New Company'}
 
         response = self.client.post(reverse('company-list'), company_data, format='json')
-        print(response)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['name'], company_data['name'])
@@ -251,3 +256,87 @@ class InvitationToCompanyTests(TestCase):
         response = self.client.post(url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class CompanyAdminTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+        self.user_1 = UserFactory()
+        self.user_2 = UserFactory()
+        self.user_3 = UserFactory()
+        self.user_4 = UserFactory()
+        self.user_5 = UserFactory()
+        self.user_6 = UserFactory()
+
+        self.company_1 = CompanyFactory(owner=self.user_1)
+
+        self.member_company_2_1 = CompanyMemberAdminFactory(company=self.company_1, member=self.user_2)
+        self.member_company_3_1 = CompanyMemberAdminFactory(company=self.company_1, member=self.user_3)
+        self.member_company_4_1 = CompanyMemberAdminFactory(company=self.company_1, member=self.user_4)
+
+        self.member_company_5_1 = CompanyMemberFactory(company=self.company_1, member=self.user_5)
+
+        self.url_admin_list_1 = reverse('company-admins', args=[self.company_1.id])
+        self.url_appoint_admin_1_5 = reverse('company-appoint-admin', args=[self.company_1.id, self.user_5.id])
+        self.url_remove_admin_4_1 = reverse('company-remove-admin', args=[self.company_1.id, self.user_4.id])
+
+    def test_admin_list(self):
+        self.client.force_authenticate(user=self.user_1)
+
+        response = self.client.get(self.url_admin_list_1)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue('results' in response.data)
+
+        expected_admins = [self.user_2.id, self.user_3.id, self.user_4.id]
+        admins_from_response = [user['member']['id'] for user in response.data['results']]
+        self.assertEqual(sorted(admins_from_response), sorted(expected_admins))
+
+    def test_non_owner_admin_list(self):
+        self.client.force_authenticate(user=self.user_2)
+
+        response = self.client.get(self.url_admin_list_1)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_appoint_admin(self):
+        self.client.force_authenticate(user=self.user_1)
+
+        response = self.client.post(self.url_appoint_admin_1_5)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(CompanyMember.objects.filter(member=self.user_5, admin=True).exists())
+
+    def test_non_owner_appoint_admin(self):
+        self.client.force_authenticate(user=self.user_2)
+
+        response = self.client.post(self.url_appoint_admin_1_5)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertFalse(CompanyMember.objects.filter(member=self.user_5, admin=True).exists())
+
+    def test_appoint_admin_non_member(self):
+        self.client.force_authenticate(user=self.user_1)
+        url = reverse('company-appoint-admin', args=[self.company_1.id, self.user_6.id])
+
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertFalse(CompanyMember.objects.filter(member=self.user_6, admin=True).exists())
+
+    def test_remove_admin(self):
+        self.client.force_authenticate(user=self.user_1)
+
+        response = self.client.post(self.url_remove_admin_4_1)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(CompanyMember.objects.filter(member=self.user_4, admin=False).exists())
+
+    def test_non_owner_remove_admin(self):
+        self.client.force_authenticate(user=self.user_2)
+
+        response = self.client.post(self.url_remove_admin_4_1)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertFalse(CompanyMember.objects.filter(member=self.user_4, admin=False).exists())
