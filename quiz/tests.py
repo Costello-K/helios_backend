@@ -4,7 +4,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from common.factories import (
+from tests.test_models import (
     CompanyFactory,
     CompanyMemberAdminFactory,
     FalseAnswerFactory,
@@ -13,7 +13,7 @@ from common.factories import (
     TrueAnswerFactory,
     UserFactory,
 )
-from common.testing_data import (
+from tests.test_data import (
     INCORRECT_QUIZ_DATA_MIN_ANSWERS,
     INCORRECT_QUIZ_DATA_MIN_QUESTIONS,
     INCORRECT_QUIZ_DATA_MISSING_TRUE,
@@ -166,7 +166,7 @@ class QuizTests(TestCase):
         self.assertEqual(updated_quiz.title, self.updated_quiz_data['title'])
         self.assertEqual(updated_quiz.questions.count(), len(self.updated_quiz_data['questions']))
         self.assertEqual(
-            updated_quiz.questions.all().first().answers.all().first().text,
+            updated_quiz.questions.first().answers.first().text,
             self.updated_quiz_data['questions'][0]['answers'][0]['text']
         )
 
@@ -180,7 +180,7 @@ class QuizTests(TestCase):
         self.assertEqual(updated_quiz.title, self.updated_quiz_data['title'])
         self.assertEqual(updated_quiz.questions.count(), len(self.updated_quiz_data['questions']))
         self.assertEqual(
-            updated_quiz.questions.all().first().answers.all().first().text,
+            updated_quiz.questions.first().answers.first().text,
             self.updated_quiz_data['questions'][0]['answers'][0]['text']
         )
 

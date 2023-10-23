@@ -62,7 +62,14 @@ class QuizSerializer(serializers.ModelSerializer):
             instance.description = validated_data.get('description', instance.description)
             instance.frequency = validated_data.get('frequency', instance.frequency)
             questions_data = validated_data.pop('questions')
-            instance.remove_unused_questions(questions_data)
+
+            immutable_question_ids = []
+            for question_data in questions_data:
+                question = instance.questions.filter(id=question_data.get('id'), quiz=instance)
+                if question.exists():
+                    immutable_question_ids.append(question.first())
+            instance.remove_unused_questions(immutable_question_ids)
+
             self.create_or_update_questions(instance, questions_data)
             instance.save()
 

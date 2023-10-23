@@ -29,14 +29,8 @@ class Quiz(TimeStampedModel):
 
         return question
 
-    def remove_unused_questions(self, update_questions):
-        immutable_question_ids = [
-            self.questions.filter(id=question.get('id'), quiz=self).first().id for question in update_questions
-            if self.questions.filter(id=question.get('id'), quiz=self).exists()
-        ]
-        self.questions.all().exclude(id__in=immutable_question_ids).delete()
-
-        self.save()
+    def remove_unused_questions(self, immutable_question_ids):
+        self.questions.exclude(id__in=immutable_question_ids).delete()
 
 
 class Question(TimeStampedModel):
@@ -50,14 +44,17 @@ class Question(TimeStampedModel):
     def __str__(self):
         return f'id_{self.id}: {self.question_text[:30]}'
 
-    def update_answers(self, data):
-        immutable_answers_ids = [
-            self.answers.filter(**answer).first().id for answer in data if self.answers.filter(**answer).exists()
-        ]
+    def update_answers(self, answers_data):
+        immutable_answers_ids = []
+        for answer_data in answers_data:
+            answer = self.answers.filter(**answer_data)
+            if answer.exists():
+                immutable_answers_ids.append(answer.first().id)
+
         remove_answer = self.answers.exclude(id__in=immutable_answers_ids)
         self.answers.remove(*remove_answer)
 
-        for answer in data:
+        for answer in answers_data:
             new_answer, create = Answer.objects.get_or_create(**answer)
             self.answers.add(new_answer)
 
