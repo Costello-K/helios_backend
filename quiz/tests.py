@@ -4,6 +4,13 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
+from tests.test_data import (
+    INCORRECT_QUIZ_DATA_MIN_ANSWERS,
+    INCORRECT_QUIZ_DATA_MIN_QUESTIONS,
+    INCORRECT_QUIZ_DATA_MISSING_TRUE,
+    QUIZ_DATA,
+    UPDATED_QUIZ_DATA,
+)
 from tests.test_models import (
     CompanyFactory,
     CompanyMemberAdminFactory,
@@ -12,13 +19,6 @@ from tests.test_models import (
     QuizFactory,
     TrueAnswerFactory,
     UserFactory,
-)
-from tests.test_data import (
-    INCORRECT_QUIZ_DATA_MIN_ANSWERS,
-    INCORRECT_QUIZ_DATA_MIN_QUESTIONS,
-    INCORRECT_QUIZ_DATA_MISSING_TRUE,
-    QUIZ_DATA,
-    UPDATED_QUIZ_DATA,
 )
 
 from .models import Quiz
