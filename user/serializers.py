@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
@@ -6,6 +5,7 @@ from rest_framework import serializers
 
 from common.enums import RequestStatus
 from company.models import Company
+from internship_meduzzen_backend.settings import DEFAULT_USER_AVATAR_URL, USER_AVATAR_MAX_SIZE_MB
 from user.models import RequestToCompany
 
 User = get_user_model()
@@ -40,8 +40,6 @@ class UserSerializer(serializers.ModelSerializer):
         # extract the fields from validated_data or set it to None if absent
         password = validated_data.pop('password', None)
         confirm_password = validated_data.pop('confirm_password', None)
-        email = validated_data.get('email')
-        avatar = validated_data.get('avatar')
 
         # check that the 'password' field is not empty
         if password is None:
@@ -53,21 +51,6 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {'confirm_password': _('Password and confirm_password are different.')}
             )
-        # check that the email field is not empty
-        if not email:
-            raise serializers.ValidationError(
-                {'email': _('Email field is required.')}
-            )
-        # check that the email field is not use
-        if User.objects.filter(email=email).exists():
-            raise serializers.ValidationError(
-                {'email': _('Email is already in use.')}
-            )
-        # check the avatar file size to the maximum allowed size
-        if avatar and avatar.size > (settings.USER_AVATAR_MAX_SIZE_MB * 1024 * 1024):
-            raise serializers.ValidationError(
-                {'avatar': _('Maximum image size allowed is {} Mb').format(settings.USER_AVATAR_MAX_SIZE_MB)}
-            )
 
         # create a new user
         # is_active=False to require user activation via email
@@ -75,54 +58,48 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user
 
+    def update(self, instance, validated_data):
+        if self.context['request'].data.get('avatar') == '':
+            validated_data['avatar'] = None
+
+        return super().update(instance, validated_data)
+
     def to_representation(self, instance):
         # Initialize the data dictionary with the default representation
         data = super().to_representation(instance)
 
-        request = self.context.get('request')
-        request_method = request.method if request else None
-        # Get 'avatar' value from initial_data or set it to None
-        avatar = self.initial_data.get('avatar') if hasattr(self, 'initial_data') else None
-
-        if request_method in ['PUT', 'PATCH']:
-            # If 'avatar' in the request is an empty string, set it to the default avatar URL
-            if avatar == '':
-                data['avatar'] = settings.DEFAULT_USER_AVATAR_URL
-            # If 'avatar' in the request is not empty, set it to the user's avatar URL
-            elif avatar:
-                data['avatar'] = instance.avatar.url
+        if hasattr(instance, 'avatar') and instance.avatar and hasattr(instance.avatar, 'file'):
+            data['avatar'] = instance.avatar.url
+        else:
+            # if the image does not exist, we send the image for the user by default
+            data['avatar'] = DEFAULT_USER_AVATAR_URL
 
         return data
 
-
-class UserDetailSerializer(UserSerializer):
-    """
-        Serializer class for detailed User objects.
-        This serializer extends the UserSerializer to include additional details, such as the user's avatar.
-
-        Attributes:
-            avatar (SerializerMethodField): A method field that serializes the user's avatar URL.
-        This serializer is used for displaying detailed information about a user, including their avatar if available.
-        """
-    avatar = serializers.SerializerMethodField()
+    @staticmethod
+    def validate_avatar(value):
+        if value and value.size > (USER_AVATAR_MAX_SIZE_MB * 1024 * 1024):
+            raise serializers.ValidationError(
+                _('Maximum image size allowed is {} Mb').format(USER_AVATAR_MAX_SIZE_MB)
+            )
+        return value
 
     @staticmethod
-    def get_avatar(user):
-        """
-        Get the user's avatar URL.
-        This method retrieves the URL of the user's avatar if it's available or provides a default avatar URL if not.
-        """
-        if hasattr(user, 'avatar') and user.avatar and hasattr(user.avatar, 'file'):
-            return user.avatar.url
-        # if the image does not exist, we send the image for the user by default
-        return settings.DEFAULT_USER_AVATAR_URL
+    def validate_email(value):
+        if not value:
+            raise serializers.ValidationError(_('Email field is required.'))
+        # check that the email field is not use
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError(_('Email is already in use.'))
+
+        return value
 
 
 class RequestToCompanySerializer(serializers.ModelSerializer):
     from company.serializers import CompanySerializer
 
     company = CompanySerializer(read_only=True)
-    sender = UserDetailSerializer(read_only=True)
+    sender = UserSerializer(read_only=True)
 
     class Meta:
         model = RequestToCompany

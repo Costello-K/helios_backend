@@ -14,13 +14,14 @@ from company.serializers import InvitationToCompanySerializer
 from services.decorators import log_database_changes
 
 from .models import RequestToCompany
-from .serializers import RequestToCompanySerializer, UserDetailSerializer, UserSerializer
+from .serializers import RequestToCompanySerializer, UserSerializer
 
 User = get_user_model()
 
 
 @log_database_changes
 class UserViewSet(viewsets.ModelViewSet):
+    serializer_class = UserSerializer
     permission_classes = (IsOwner | ReadOnly, )
     ordering = ('created_at', )
 
@@ -30,11 +31,6 @@ class UserViewSet(viewsets.ModelViewSet):
         queryset = queryset.order_by(*self.ordering)
 
         return queryset
-
-    def get_serializer_class(self):
-        if self.action in ('retrieve', 'list'):
-            return UserDetailSerializer
-        return UserSerializer
 
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def requests(self, request, pk=None):

@@ -26,7 +26,7 @@ class IsCompanyOwner(permissions.BasePermission):
     Grants access to the object only to the company owner
     """
     def has_permission(self, request, view):
-        if view.action in ['remove_user', 'list', 'admins', 'appoint_admin', 'remove_admin']:
+        if view.action in ['create', 'revoke', 'remove_user', 'list', 'admins', 'appoint_admin', 'remove_admin']:
             company_pk = request.parser_context.get('kwargs', {}).get('company_pk')
 
             if company_pk is None:
@@ -74,25 +74,25 @@ class IsRequestSender(permissions.BasePermission):
         return instance.sender == request.user
 
 
-class IsCompanyOwnerCreateInvitation(permissions.IsAuthenticated):
+class IsCompanyAdmin(permissions.BasePermission):
     """
-    Only the company owner can create and revoke invitations
+    Grants access to the object only to the administrator
     """
     def has_permission(self, request, view):
-        if view.action in ['create', 'revoke']:
+        if view.action in ['create', 'list']:
             company_pk = request.parser_context.get('kwargs', {}).get('company_pk')
 
             if company_pk is None:
                 return False
 
             company = get_object_or_404(Company, pk=company_pk)
-            return company.is_owner(request.user)
+            return company.companymember_set.filter(member=request.user, admin=True).exists()
 
         return super().has_permission(request, view)
 
     def has_object_permission(self, request, view, instance):
         if hasattr(instance, 'company'):
-            return instance.company.is_owner(request.user)
+            return instance.company.companymember_set.filter(member=request.user, admin=True).exists()
         elif hasattr(instance, 'owner'):
-            return instance.is_owner(request.user)
+            return instance.companymember_set.filter(member=request.user, admin=True).exists()
         return False
