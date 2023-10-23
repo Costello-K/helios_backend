@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from common.enums import InvitationStatus
-from common.factories import (
+from tests.test_models import (
     CompanyFactory,
     CompanyMemberAdminFactory,
     CompanyMemberFactory,

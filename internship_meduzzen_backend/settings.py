@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'message',
 
     'common',
+    'tests',
 ]
 
 MIDDLEWARE = [
@@ -196,7 +197,7 @@ REST_FRAMEWORK = {
 DJOSER = {
     'SERIALIZERS': {
         'user': 'user.serializers.UserSerializer',
-        'current_user': 'user.serializers.UserDetailSerializer',
+        'current_user': 'user.serializers.UserSerializer',
         'user_create': 'user.serializers.UserSerializer',
         'user_delete': 'djoser.serializers.UserDeleteSerializer',
     },
@@ -320,3 +321,7 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
+
+# Quiz settings
+MIN_COUNT_QUESTIONS = 2
+MIN_COUNT_ANSWERS = 2

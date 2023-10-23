@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from common.enums import RequestStatus
-from common.factories import CompanyFactory, RequestToCompanyFactory, UserFactory
+from tests.test_models import CompanyFactory, RequestToCompanyFactory, UserFactory
 
 User = get_user_model()
 

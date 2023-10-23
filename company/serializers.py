@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from common.enums import InvitationStatus
-from user.serializers import UserDetailSerializer
+from user.serializers import UserSerializer
 
 from .models import Company, CompanyMember, InvitationToCompany
 
@@ -12,7 +12,7 @@ User = get_user_model()
 
 
 class CompanySerializer(serializers.ModelSerializer):
-    owner = UserDetailSerializer(read_only=True)
+    owner = UserSerializer(read_only=True)
 
     class Meta:
         model = Company
@@ -25,7 +25,7 @@ class CompanySerializer(serializers.ModelSerializer):
 
 
 class CompanyMemberSerializer(serializers.ModelSerializer):
-    member = UserDetailSerializer(read_only=True)
+    member = UserSerializer(read_only=True)
 
     class Meta:
         model = CompanyMember
@@ -34,7 +34,7 @@ class CompanyMemberSerializer(serializers.ModelSerializer):
 
 class InvitationToCompanySerializer(serializers.ModelSerializer):
     company = CompanySerializer(read_only=True)
-    recipient = UserDetailSerializer(read_only=True)
+    recipient = UserSerializer(read_only=True)
 
     class Meta:
         model = InvitationToCompany

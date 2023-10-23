@@ -10,7 +10,6 @@ from rest_framework.response import Response
 from common.enums import InvitationStatus
 from common.permissions import (
     IsCompanyOwner,
-    IsCompanyOwnerCreateInvitation,
     IsInvitationRecipient,
     ReadOnly,
 )
@@ -31,7 +30,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
     ordering = ('created_at', )
 
     def get_permissions(self):
-        if self.action == ['remove_me', 'create']:
+        if self.action in ['remove_me', 'create']:
             permission_classes = [IsAuthenticated]
         elif self.action in ['list', 'retrieve']:
             permission_classes = [ReadOnly]
@@ -103,12 +102,10 @@ class InvitationToCompanyViewSet(viewsets.ModelViewSet):
             .order_by(*self.ordering)
 
     def get_permissions(self):
-        if self.action in ['create', 'revoke']:
-            permission_classes = [IsCompanyOwnerCreateInvitation]
+        if self.action in ['list', 'create', 'revoke']:
+            permission_classes = [IsCompanyOwner]
         elif self.action in ['partial_update', 'update']:
             permission_classes = [IsInvitationRecipient]
-        elif self.action == 'list':
-            permission_classes = [IsCompanyOwner]
         else:
             permission_classes = [IsCompanyOwner | IsInvitationRecipient]
 

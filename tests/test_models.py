@@ -1,9 +1,11 @@
 import factory
 from django.contrib.auth import get_user_model
-from factory import LazyAttribute, PostGenerationMethodCall, Sequence, SubFactory
+from factory import Faker, LazyAttribute, PostGenerationMethodCall, Sequence, SubFactory
 from factory.django import DjangoModelFactory
+from factory.fuzzy import FuzzyChoice, FuzzyInteger
 
 from company.models import Company, CompanyMember, InvitationToCompany
+from quiz.models import Answer, Question, Quiz
 from user.models import RequestToCompany
 
 User = get_user_model()
@@ -25,7 +27,7 @@ class CompanyFactory(DjangoModelFactory):
         model = Company
 
     name = Sequence(lambda n: f'Company_{n}')
-    description = factory.Faker('text')
+    description = Faker('text')
     visibility = True
     owner = SubFactory(UserFactory)
 
@@ -59,3 +61,53 @@ class RequestToCompanyFactory(DjangoModelFactory):
 
     sender = SubFactory(UserFactory)
     company = SubFactory(CompanyFactory)
+
+
+class QuizFactory(DjangoModelFactory):
+    class Meta:
+        model = Quiz
+
+    company = SubFactory(CompanyFactory)
+    title = Sequence(lambda n: f'Quiz_{n}')
+    description = Faker('text')
+    frequency = FuzzyInteger(1, 10)
+
+
+class QuestionFactory(DjangoModelFactory):
+    class Meta:
+        model = Question
+
+    quiz = SubFactory(QuizFactory)
+    question_text = Sequence(lambda n: f'Question_{n}')
+
+
+class AnswerFactory(DjangoModelFactory):
+    class Meta:
+        model = Answer
+
+    question = SubFactory(QuestionFactory)
+    text = Sequence(lambda n: f'Answer_{n}')
+    is_right = FuzzyChoice([True, False])
+
+    @factory.post_generation
+    def question(self, create, extracted, **kwargs):
+        if not create or not extracted:
+            # Simple build, or nothing to add, do nothing.
+            return
+
+        # Add the iterable of groups using bulk addition
+        self.question.add(*extracted)
+
+
+class TrueAnswerFactory(AnswerFactory):
+    class Meta:
+        model = Answer
+
+    is_right = True
+
+
+class FalseAnswerFactory(AnswerFactory):
+    class Meta:
+        model = Answer
+
+    is_right = False

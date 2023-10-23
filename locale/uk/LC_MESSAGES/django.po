@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-18 22:38+0300\n"
+"POT-Creation-Date: 2023-10-23 07:46+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgstr ""
 msgid "name"
 msgstr "назва"
 
-#: .\company\models.py:13
+#: .\company\models.py:13 .\quiz\models.py:11
 msgid "description"
 msgstr "опис"
 
@@ -37,90 +37,91 @@ msgstr "видимість"
 msgid "owner"
 msgstr "власник"
 
-#: .\company\models.py:22 .\company\models.py:108 .\user\models.py:53
+#: .\company\models.py:25 .\company\models.py:111 .\user\models.py:53
 msgid "The user is already a member of the company."
 msgstr "Користувач вже є учасником компанії."
 
-#: .\company\models.py:24 .\company\serializers.py:52
+#: .\company\models.py:27 .\company\serializers.py:52
 msgid "The owner cannot be a member of the company."
 msgstr "Власник не може бути членом компанії."
 
-#: .\company\models.py:32
+#: .\company\models.py:35
 msgid ""
 "To be designated as an administrator, a user must be a member of a company."
-msgstr "Щоб стати адміністратором, спочатку користувач має стати членом компанії."
+msgstr ""
+"Щоб стати адміністратором, спочатку користувач має стати членом компанії."
 
-#: .\company\models.py:35
+#: .\company\models.py:38
 msgid "The user is already a company administrator."
 msgstr "Користувач вже є адміністратором компанії."
 
-#: .\company\models.py:43
+#: .\company\models.py:46
 msgid "The user is not a company administrator."
 msgstr "Користувач не є адміністратором компанії."
 
-#: .\company\models.py:73
+#: .\company\models.py:76
 msgid "The user is not a member of this company."
 msgstr "Користувач не є членом цієї компанії."
 
-#: .\company\models.py:76 .\company\models.py:82 .\company\models.py:97
-#: .\user\models.py:42
+#: .\company\models.py:79 .\company\models.py:85 .\company\models.py:100
+#: .\quiz\models.py:9 .\user\models.py:42
 msgid "company"
 msgstr "компанія"
 
-#: .\company\models.py:77
+#: .\company\models.py:80
 msgid "companies"
 msgstr "компанії"
 
-#: .\company\models.py:81
+#: .\company\models.py:84
 msgid "member"
 msgstr "учасник"
 
-#: .\company\models.py:83
+#: .\company\models.py:86
 msgid "admin"
 msgstr "адмін"
 
-#: .\company\models.py:86
+#: .\company\models.py:89
 msgid "company member"
 msgstr "учасник компанії"
 
-#: .\company\models.py:87
+#: .\company\models.py:90
 msgid "company members"
 msgstr "учасники компанії"
 
-#: .\company\models.py:93
+#: .\company\models.py:96
 msgid "recipient"
 msgstr "отримувач"
 
-#: .\company\models.py:99 .\user\models.py:44
+#: .\company\models.py:102 .\user\models.py:44
 msgid "status"
 msgstr "статус"
 
-#: .\company\models.py:106 .\company\models.py:116
+#: .\company\models.py:109 .\company\models.py:119
 msgid "The invitation has already been processed."
 msgstr "Запрошення вже було опрацьоване."
 
-#: .\company\models.py:121
+#: .\company\models.py:124
 msgid "invitation to company"
 msgstr "запрошення в компанію"
 
-#: .\company\models.py:122
+#: .\company\models.py:125
 msgid "invitations to companies"
 msgstr "запрошення в компанії"
 
-#: .\company\views.py:71 .\company\views.py:76
+#: .\company\views.py:70 .\company\views.py:75
 msgid "User removed from the company."
 msgstr "Користувач видалений з компанії."
 
-#: .\company\views.py:81 .\company\views.py:89 .\user\views.py:42
-#: .\user\views.py:49
+#: .\company\views.py:80 .\company\views.py:88 .\user\views.py:38
+#: .\user\views.py:45
 msgid "Page not found."
 msgstr "Сторінку не знайдено."
 
-#: .\company\views.py:84
+#: .\company\views.py:83
 msgid "An admin has been added to the company."
 msgstr "Адміністратора було додано до компанії"
 
-#: .\company\views.py:92
+#: .\company\views.py:91
 msgid "The admin was removed from the company."
 msgstr "Адміністратор був видалений з компанії."
 
@@ -131,6 +132,62 @@ msgstr "Англійська"
 #: .\internship_meduzzen_backend\settings.py:148
 msgid "Ukraine"
 msgstr "Українська"
+
+#: .\quiz\models.py:10
+msgid "title"
+msgstr "назва"
+
+#: .\quiz\models.py:12
+msgid "frequency"
+msgstr "частота"
+
+#: .\quiz\models.py:15 .\quiz\models.py:43
+msgid "quiz"
+msgstr "вікторина"
+
+#: .\quiz\models.py:16
+msgid "quizzes"
+msgstr "вікторини"
+
+#: .\quiz\models.py:44
+msgid "question text"
+msgstr "текст запитання"
+
+#: .\quiz\models.py:47 .\quiz\models.py:68
+msgid "question"
+msgstr "запитання"
+
+#: .\quiz\models.py:48
+msgid "questions"
+msgstr "опис"
+
+#: .\quiz\models.py:69
+msgid "text"
+msgstr "текст"
+
+#: .\quiz\models.py:70
+msgid "is right"
+msgstr "правильно"
+
+#: .\quiz\models.py:73
+msgid "answer"
+msgstr "питання"
+
+#: .\quiz\models.py:74
+msgid "answers"
+msgstr "питання"
+
+#: .\quiz\serializers.py:84
+msgid "A quiz must have at least {} questions."
+msgstr ""
+
+#: .\quiz\serializers.py:91
+msgid "A question must have at least {} answers."
+msgstr "Тест має містити принаймні {} запитань."
+
+#: .\quiz\serializers.py:94
+msgid "At least one answer must be marked as correct."
+msgstr "Принаймні одна відповідь має бути позначена як правильна."
 
 #: .\templates\account_email_activation.html:4
 #, python-format
@@ -187,6 +244,7 @@ msgid "Password reset on %(frontend_site_name)s"
 msgstr "Скинути пароль на %(frontend_site_name)s"
 
 #: .\templates\account_password_reset.html:8
+#: .\templates\account_password_reset.html:22
 #, python-format
 msgid ""
 "You're receiving this email because you requested a password reset for your "
@@ -216,21 +274,13 @@ msgstr "Будь ласка, перейдіть за посиланням та �
 msgid "Your username, in case you've forgotten:"
 msgstr "Ваш юзернейм, якщо ви забули:"
 
-#: .\templates\account_password_reset.html:22
-#, python-format
-msgid ""
-"You're receiving this email because you requested a password reset for your "
-"user account at %(site_name)s."
-msgstr ""
-"Ви отримали цей електронний лист, оскільки надіслали запит на скидання "
-"пароля для свого облікового запису користувача на %(site_name)s."
-
 #: .\templates\account_username_reset.html:4
 #, python-format
 msgid "Username reset on %(frontend_site_name)s"
 msgstr "Скидання юзернейма на %(frontend_site_name)s"
 
 #: .\templates\account_username_reset.html:8
+#: .\templates\account_username_reset.html:22
 #, python-format
 msgid ""
 "You're receiving this email because you requested a username reset for your "
@@ -254,15 +304,6 @@ msgid "Please go to the following page and choose a new username:"
 msgstr ""
 "Будь ласка, перейдіть за наступним посиланням та виберіть новий юзернейм:"
 
-#: .\templates\account_username_reset.html:22
-#, python-format
-msgid ""
-"You're receiving this email because you requested a username reset for your "
-"user account at %(site_name)s."
-msgstr ""
-"Ви отримали цей електронний лист, оскільки надіслали запит на скидання "
-"юзернейма для свогоакаунта на %(site_name)s."
-
 #: .\user\models.py:26
 msgid "avatar"
 msgstr "аватар"
@@ -283,22 +324,22 @@ msgstr "запит до компанії"
 msgid "requests to companies"
 msgstr "запити до компаній"
 
-#: .\user\serializers.py:49
+#: .\user\serializers.py:47
 msgid "Password is required for user creation."
 msgstr "Поле пароль є обов'язковим"
 
-#: .\user\serializers.py:54
+#: .\user\serializers.py:52
 msgid "Password and confirm_password are different."
 msgstr "Пароль та підтвердження пароля не співпадають."
 
-#: .\user\serializers.py:59
+#: .\user\serializers.py:83
+msgid "Maximum image size allowed is {} Mb"
+msgstr "Максимальний допустимий розмір файлу {} Mб"
+
+#: .\user\serializers.py:90
 msgid "Email field is required."
 msgstr "Поле емейл є обов'язковим."
 
-#: .\user\serializers.py:64
+#: .\user\serializers.py:93
 msgid "Email is already in use."
 msgstr "Емейл вже існує."
-
-#: .\user\serializers.py:69
-msgid "Maximum image size allowed is {} Mb"
-msgstr "Максимальний допустимий розмір файлу {} Mб"

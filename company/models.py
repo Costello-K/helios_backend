@@ -14,6 +14,9 @@ class Company(TimeStampedModel):
     visibility = models.BooleanField(_('visibility'), default=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('owner'), on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.name[:30]
+
     def is_owner(self, user):
         return self.owner == user
 
