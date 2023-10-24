@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-23 07:46+0300\n"
+"POT-Creation-Date: 2023-10-24 23:59+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,11 +21,15 @@ msgstr ""
 "100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || "
 "(n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
 
+#: .\common\permissions.py:127
+msgid "You have exceeded the limit. The quiz will be available via {}."
+msgstr "Ви перевищили ліміт. Тест буде доступний через {}."
+
 #: .\company\models.py:12
 msgid "name"
 msgstr "назва"
 
-#: .\company\models.py:13 .\quiz\models.py:11
+#: .\company\models.py:13 .\quiz\models.py:19
 msgid "description"
 msgstr "опис"
 
@@ -64,7 +68,7 @@ msgid "The user is not a member of this company."
 msgstr "Користувач не є членом цієї компанії."
 
 #: .\company\models.py:79 .\company\models.py:85 .\company\models.py:100
-#: .\quiz\models.py:9 .\user\models.py:42
+#: .\quiz\models.py:17 .\quiz\models.py:113 .\user\models.py:42
 msgid "company"
 msgstr "компанія"
 
@@ -112,8 +116,8 @@ msgstr "запрошення в компанії"
 msgid "User removed from the company."
 msgstr "Користувач видалений з компанії."
 
-#: .\company\views.py:80 .\company\views.py:88 .\user\views.py:38
-#: .\user\views.py:45
+#: .\company\views.py:80 .\company\views.py:88 .\quiz\views.py:66
+#: .\quiz\views.py:76 .\user\views.py:38 .\user\views.py:45
 msgid "Page not found."
 msgstr "Сторінку не знайдено."
 
@@ -125,67 +129,131 @@ msgstr "Адміністратора було додано до компанії
 msgid "The admin was removed from the company."
 msgstr "Адміністратор був видалений з компанії."
 
-#: .\internship_meduzzen_backend\settings.py:147
+#: .\internship_meduzzen_backend\settings.py:148
 msgid "English"
 msgstr "Англійська"
 
-#: .\internship_meduzzen_backend\settings.py:148
+#: .\internship_meduzzen_backend\settings.py:149
 msgid "Ukraine"
 msgstr "Українська"
 
-#: .\quiz\models.py:10
+#: .\quiz\models.py:18
 msgid "title"
 msgstr "назва"
 
-#: .\quiz\models.py:12
+#: .\quiz\models.py:20
 msgid "frequency"
 msgstr "частота"
 
-#: .\quiz\models.py:15 .\quiz\models.py:43
+#: .\quiz\models.py:23 .\quiz\models.py:70 .\quiz\models.py:115
 msgid "quiz"
 msgstr "вікторина"
 
-#: .\quiz\models.py:16
+#: .\quiz\models.py:24
 msgid "quizzes"
 msgstr "вікторини"
 
-#: .\quiz\models.py:44
+#: .\quiz\models.py:50
+msgid "Question mismatch"
+msgstr "Невідповідність питання"
+
+#: .\quiz\models.py:56
+msgid "Answer mismatch"
+msgstr "Невідповідність відповіді"
+
+#: .\quiz\models.py:71
 msgid "question text"
 msgstr "текст запитання"
 
-#: .\quiz\models.py:47 .\quiz\models.py:68
+#: .\quiz\models.py:74 .\quiz\models.py:98
 msgid "question"
 msgstr "запитання"
 
-#: .\quiz\models.py:48
+#: .\quiz\models.py:75
 msgid "questions"
 msgstr "опис"
 
-#: .\quiz\models.py:69
+#: .\quiz\models.py:99
 msgid "text"
 msgstr "текст"
 
-#: .\quiz\models.py:70
+#: .\quiz\models.py:100
 msgid "is right"
 msgstr "правильно"
 
-#: .\quiz\models.py:73
+#: .\quiz\models.py:103
 msgid "answer"
 msgstr "питання"
 
-#: .\quiz\models.py:74
+#: .\quiz\models.py:104
 msgid "answers"
 msgstr "питання"
 
-#: .\quiz\serializers.py:84
-msgid "A quiz must have at least {} questions."
-msgstr ""
+#: .\quiz\models.py:111
+msgid "participant"
+msgstr "учасник"
 
-#: .\quiz\serializers.py:91
+#: .\quiz\models.py:118
+msgid "correct answers"
+msgstr "правильні відповіді"
+
+#: .\quiz\models.py:119
+msgid "total questions"
+msgstr "всього питань"
+
+#: .\quiz\models.py:120
+msgid "progress status"
+msgstr "статус прогресу"
+
+#: .\quiz\models.py:124
+msgid "correct answers collector"
+msgstr "збірник правильних відповідей"
+
+#: .\quiz\models.py:125
+msgid "total questions collector"
+msgstr "збірник всіх патань"
+
+#: .\quiz\models.py:126
+msgid "correct company answers collector"
+msgstr "збірка правильних відповідей в компанії"
+
+#: .\quiz\models.py:127
+msgid "total company questions collector"
+msgstr "загальна збірка питань в компанії"
+
+#: .\quiz\models.py:129
+msgid "quiz time"
+msgstr "час проходження вікторини"
+
+#: .\quiz\models.py:130
+msgid "company average score"
+msgstr "середній бал в компанії"
+
+#: .\quiz\models.py:131
+msgid "user rating"
+msgstr "оцінка користувача"
+
+#: .\quiz\models.py:134
+msgid "user quiz result"
+msgstr "результат вікторини користувача"
+
+#: .\quiz\models.py:135
+msgid "user quiz results"
+msgstr "результати вікторин користувача"
+
+#: .\quiz\models.py:139
+msgid "The quiz has already been completed"
+msgstr "Вікторину вже завершено."
+
+#: .\quiz\serializers.py:98
+msgid "A quiz must have at least {} questions."
+msgstr "Тест має містити принаймні {} запитань."
+
+#: .\quiz\serializers.py:105
 msgid "A question must have at least {} answers."
 msgstr "Тест має містити принаймні {} запитань."
 
-#: .\quiz\serializers.py:94
+#: .\quiz\serializers.py:108
 msgid "At least one answer must be marked as correct."
 msgstr "Принаймні одна відповідь має бути позначена як правильна."
 

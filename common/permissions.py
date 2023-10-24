@@ -1,7 +1,12 @@
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from rest_framework import permissions
+from rest_framework.exceptions import NotAcceptable
 
+from common.enums import QuizProgressStatus
 from company.models import Company
+from quiz.models import Quiz, UserQuizResult
 from user.models import RequestToCompany
 
 
@@ -96,3 +101,44 @@ class IsCompanyAdmin(permissions.BasePermission):
         elif hasattr(instance, 'owner'):
             return instance.companymember_set.filter(member=request.user, admin=True).exists()
         return False
+
+
+class FrequencyLimit(permissions.BasePermission):
+    """
+    Allows access to an object if the user has not exceeded the test frequency
+    """
+    def has_permission(self, request, view):
+        quiz_pk = request.parser_context.get('kwargs', {}).get('pk')
+
+        if quiz_pk is None:
+            return False
+
+        quiz = get_object_or_404(Quiz, id=quiz_pk)
+
+        last_completed_user_quiz_result = UserQuizResult.objects.filter(
+            participant=request.user, quiz=quiz, progress_status=QuizProgressStatus.COMPLETED.value
+        ).order_by('-updated_at').last()
+
+        if last_completed_user_quiz_result and quiz.frequency:
+            time_since_last_completion = timezone.now() - last_completed_user_quiz_result.updated_at
+            delta_time = timezone.timedelta(days=quiz.frequency) - time_since_last_completion
+            if delta_time > timezone.timedelta(0):
+                raise NotAcceptable(
+                    {'message': _('You have exceeded the limit. The quiz will be available via {}.').format(delta_time)}
+                )
+
+        return True
+
+
+class IsUserQuizResultParticipant(permissions.BasePermission):
+    """
+    Allows access to the object only to the UserQuizResult participant.
+    """
+    def has_permission(self, request, view):
+        quiz_pk = request.parser_context.get('kwargs', {}).get('pk')
+
+        if quiz_pk is None:
+            return False
+
+        return UserQuizResult.objects.filter(participant=request.user, quiz_id=quiz_pk,
+                                             progress_status=QuizProgressStatus.STARTED.value).exists()

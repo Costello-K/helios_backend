@@ -15,3 +15,9 @@ class RequestStatus(StrEnum):
     APPROVED = auto()
     REJECTED = auto()
     CANCELLED = auto()
+
+
+# enums for UserQuizResult model
+class QuizProgressStatus(StrEnum):
+    STARTED = auto()
+    COMPLETED = auto()
