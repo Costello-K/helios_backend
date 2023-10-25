@@ -6,6 +6,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from common.cache.user_quiz_answers import cache_user_quiz_response
 from common.enums import QuizProgressStatus
 from common.permissions import (
     FrequencyLimit,
@@ -78,4 +79,5 @@ class QuizViewSet(viewsets.ModelViewSet):
                                         progress_status=QuizProgressStatus.STARTED.value)
         quiz_result.quiz_completed(request.data)
         serializer = self.get_serializer_class()(quiz_result)
+        cache_user_quiz_response(quiz_result, request.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
