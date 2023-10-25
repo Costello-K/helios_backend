@@ -5,7 +5,7 @@ from factory.django import DjangoModelFactory
 from factory.fuzzy import FuzzyChoice, FuzzyInteger
 
 from company.models import Company, CompanyMember, InvitationToCompany
-from quiz.models import Answer, Question, Quiz
+from quiz.models import Answer, Question, Quiz, UserQuizResult
 from user.models import RequestToCompany
 
 User = get_user_model()
@@ -111,3 +111,12 @@ class FalseAnswerFactory(AnswerFactory):
         model = Answer
 
     is_right = False
+
+
+class UserQuizResultFactory(DjangoModelFactory):
+    class Meta:
+        model = UserQuizResult
+
+    participant = SubFactory(UserFactory)
+    company = SubFactory(CompanyFactory)
+    quiz = SubFactory(QuizFactory)

@@ -7,8 +7,9 @@ from rest_framework.exceptions import ValidationError
 from company.models import Company
 from company.serializers import CompanySerializer
 from internship_meduzzen_backend.settings import MIN_COUNT_ANSWERS, MIN_COUNT_QUESTIONS
+from user.serializers import UserSerializer
 
-from .models import Answer, Question, Quiz
+from .models import Answer, Question, Quiz, UserQuizResult
 
 
 class AnswerSerializer(serializers.ModelSerializer):
@@ -37,12 +38,18 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 
 class QuizSerializer(serializers.ModelSerializer):
-    questions = QuestionSerializer(many=True)
     company = CompanySerializer(read_only=True)
 
     class Meta:
         model = Quiz
         fields = '__all__'
+
+
+class QuizDetailSerializer(QuizSerializer):
+    questions = QuestionSerializer(many=True)
+
+    class Meta(QuizSerializer.Meta):
+        pass
 
     def create(self, validated_data):
         company_pk = self.context['request'].parser_context['kwargs']['company_pk']
@@ -101,3 +108,13 @@ class QuizSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(_('At least one answer must be marked as correct.'))
 
         return questions_data
+
+
+class UserQuizResultSerializer(serializers.ModelSerializer):
+    participant = UserSerializer(read_only=True)
+    company = CompanySerializer(read_only=True)
+    quiz = QuizSerializer(read_only=True)
+
+    class Meta:
+        model = UserQuizResult
+        fields = '__all__'
