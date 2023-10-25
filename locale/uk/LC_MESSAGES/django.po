@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-24 23:59+0300\n"
+"POT-Creation-Date: 2023-10-25 15:42+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -116,8 +116,8 @@ msgstr "запрошення в компанії"
 msgid "User removed from the company."
 msgstr "Користувач видалений з компанії."
 
-#: .\company\views.py:80 .\company\views.py:88 .\quiz\views.py:66
-#: .\quiz\views.py:76 .\user\views.py:38 .\user\views.py:45
+#: .\company\views.py:80 .\company\views.py:88 .\quiz\views.py:67
+#: .\quiz\views.py:77 .\user\views.py:38 .\user\views.py:45
 msgid "Page not found."
 msgstr "Сторінку не знайдено."
 
@@ -129,11 +129,11 @@ msgstr "Адміністратора було додано до компанії
 msgid "The admin was removed from the company."
 msgstr "Адміністратор був видалений з компанії."
 
-#: .\internship_meduzzen_backend\settings.py:148
+#: .\internship_meduzzen_backend\settings.py:149
 msgid "English"
 msgstr "Англійська"
 
-#: .\internship_meduzzen_backend\settings.py:149
+#: .\internship_meduzzen_backend\settings.py:150
 msgid "Ukraine"
 msgstr "Українська"
 
@@ -244,6 +244,10 @@ msgstr "результати вікторин користувача"
 #: .\quiz\models.py:139
 msgid "The quiz has already been completed"
 msgstr "Вікторину вже завершено."
+
+#: .\quiz\models.py:141
+msgid "Answer data is required"
+msgstr "Дані відповідей є обов'язковими"
 
 #: .\quiz\serializers.py:98
 msgid "A quiz must have at least {} questions."

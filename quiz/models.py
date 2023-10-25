@@ -137,6 +137,8 @@ class UserQuizResult(TimeStampedModel):
     def quiz_completed(self, user_responses):
         if self.progress_status != QuizProgressStatus.STARTED.value:
             raise ValidationError(_('The quiz has already been completed'))
+        if not user_responses:
+            raise ValidationError(_('Answer data is required'))
 
         last_completed_result = self.get_last_user_quiz_result(
             participant=self.participant, progress_status=QuizProgressStatus.COMPLETED.value)
