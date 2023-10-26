@@ -1,9 +1,11 @@
 import factory
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from factory import Faker, LazyAttribute, PostGenerationMethodCall, Sequence, SubFactory
 from factory.django import DjangoModelFactory
 from factory.fuzzy import FuzzyChoice, FuzzyInteger
 
+from common.enums import QuizProgressStatus
 from company.models import Company, CompanyMember, InvitationToCompany
 from quiz.models import Answer, Question, Quiz, UserQuizResult
 from user.models import RequestToCompany
@@ -120,3 +122,19 @@ class UserQuizResultFactory(DjangoModelFactory):
     participant = SubFactory(UserFactory)
     company = SubFactory(CompanyFactory)
     quiz = SubFactory(QuizFactory)
+
+
+class UserQuizResultCompletionFactory(UserQuizResultFactory):
+    class Meta:
+        model = UserQuizResult
+
+    correct_answers = Faker('random_int', min=0, max=5)
+    total_questions = Faker('random_int', min=5, max=10)
+    progress_status = QuizProgressStatus.COMPLETED.value
+    correct_answers_collector = Faker('random_int', min=0, max=20)
+    total_questions_collector = Faker('random_int', min=20, max=40)
+    correct_company_answers_collector = Faker('random_int', min=0, max=20)
+    total_company_questions_collector = Faker('random_int', min=20, max=40)
+    quiz_time = Sequence(lambda n: timezone.timedelta(minutes=n))
+    company_average_score = Faker('pydecimal', left_digits=2, right_digits=2, positive=True)
+    user_rating = Faker('pydecimal', left_digits=2, right_digits=2, positive=True)

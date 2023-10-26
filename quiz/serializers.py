@@ -1,15 +1,19 @@
+from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
+from common.enums import QuizProgressStatus
 from company.models import Company
 from company.serializers import CompanySerializer
 from internship_meduzzen_backend.settings import MIN_COUNT_ANSWERS, MIN_COUNT_QUESTIONS
 from user.serializers import UserSerializer
 
 from .models import Answer, Question, Quiz, UserQuizResult
+
+User = get_user_model()
 
 
 class AnswerSerializer(serializers.ModelSerializer):
@@ -22,7 +26,7 @@ class AnswerSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
 
-        if not self.context.get('add_right_answer'):
+        if not self.context.get('full_access'):
             data['is_right'] = None
 
         return data
@@ -39,10 +43,30 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 class QuizSerializer(serializers.ModelSerializer):
     company = CompanySerializer(read_only=True)
+    last_quiz_completion_time = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Quiz
         fields = '__all__'
+
+    @staticmethod
+    def get_last_quiz_completion_time(quiz):
+        last_user_quiz_result = quiz.quiz_result.filter(
+            progress_status=QuizProgressStatus.COMPLETED.value
+        )
+
+        if not last_user_quiz_result.exists():
+            return None
+
+        return last_user_quiz_result.order_by('updated_at').last().updated_at
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        if not self.context.get('full_access'):
+            data['last_quiz_completion_time'] = None
+
+        return data
 
 
 class QuizDetailSerializer(QuizSerializer):
@@ -111,10 +135,51 @@ class QuizDetailSerializer(QuizSerializer):
 
 
 class UserQuizResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserQuizResult
+        fields = '__all__'
+
+
+class UserQuizResultDetailSerializer(UserQuizResultSerializer):
     participant = UserSerializer(read_only=True)
     company = CompanySerializer(read_only=True)
     quiz = QuizSerializer(read_only=True)
 
+    class Meta(UserQuizResultSerializer.Meta):
+        pass
+
+
+class QuizAnalyticsSerializer(serializers.ModelSerializer):
+    quiz_results = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
-        model = UserQuizResult
-        fields = '__all__'
+        model = Quiz
+        fields = ('id', 'title', 'quiz_results')
+
+    @staticmethod
+    def get_quiz_results(quiz):
+        queryset = UserQuizResult.objects.filter(
+            quiz=quiz,
+            progress_status=QuizProgressStatus.COMPLETED.value,
+        ).order_by('updated_at')
+
+        serialized_results = UserQuizResultSerializer(queryset, many=True)
+        return serialized_results.data
+
+
+class UserAnalyticsSerializer(serializers.ModelSerializer):
+    quiz_results = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'quiz_results')
+
+    @staticmethod
+    def get_quiz_results(user):
+        queryset = UserQuizResult.objects.filter(
+            participant=user,
+            progress_status=QuizProgressStatus.COMPLETED.value,
+        ).order_by('updated_at')
+
+        serialized_results = UserQuizResultSerializer(queryset, many=True)
+        return serialized_results.data

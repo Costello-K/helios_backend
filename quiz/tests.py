@@ -25,6 +25,8 @@ from tests.test_models import (
     QuizFactory,
     TrueAnswerFactory,
     UserFactory,
+    UserQuizResultCompletionFactory,
+    UserQuizResultFactory,
 )
 
 from .models import Quiz, UserQuizResult
@@ -67,6 +69,22 @@ class QuizTests(TestCase):
         self.answer_3 = FalseAnswerFactory(question=(self.question_1_1, self.question_1_3, self.question_2_1,
                                                      self.question_2_2, self.question_3_1))
 
+        self.result_1_2 = UserQuizResultCompletionFactory(participant=self.user_2, company=self.company_1,
+                                                          quiz=self.quiz_1)
+        self.result_2_4 = UserQuizResultCompletionFactory(participant=self.user_4, company=self.company_2,
+                                                          quiz=self.quiz_2)
+        self.result_3_2 = UserQuizResultCompletionFactory(participant=self.user_2, company=self.company_1,
+                                                          quiz=self.quiz_3)
+        self.result_1_3 = UserQuizResultCompletionFactory(participant=self.user_3, company=self.company_1,
+                                                          quiz=self.quiz_1)
+        self.result_2_3 = UserQuizResultCompletionFactory(participant=self.user_3, company=self.company_2,
+                                                          quiz=self.quiz_2)
+        self.result_3_3 = UserQuizResultCompletionFactory(participant=self.user_3, company=self.company_1,
+                                                          quiz=self.quiz_3)
+
+        self.quiz_result_not_completion = UserQuizResultFactory(participant=self.user_3, company=self.company_1,
+                                                                quiz=self.quiz_3)
+
         self.url_get_quiz_list = reverse('quiz-list', args=[self.company_1.id])
         self.url_get_quiz_1 = reverse('quiz-detail', args=[self.company_1.id, self.quiz_1.id])
         self.url_get_quiz_2 = reverse('quiz-detail', args=[self.company_2.id, self.quiz_2.id])
@@ -80,6 +98,48 @@ class QuizTests(TestCase):
         self.create_quiz_data_2 = CREATE_QUIZ_DATA
         self.quiz_complete_data_2 = USER_QUIZ_ANSWERS_DATA
         self.create_quiz_data_3 = CREATE_QUIZ_VS_ANSWER_DATA
+
+    def test_quizzes_analytics_list(self):
+        self.client.force_authenticate(user=self.user_3)
+        url = reverse('quiz-analytics-list')
+
+        response = self.client.get(url)
+        data = response.data
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data), Quiz.objects.count())
+        expected_results = [self.result_3_2.id, self.result_3_3.id]
+        results_from_response = [result['quiz_results'] for result in data if result['id'] == self.quiz_3.id]
+        results_id = [result['id'] for result in results_from_response[0]]
+        self.assertEqual(sorted(results_id), sorted(expected_results))
+
+    def test_users_analytics_list(self):
+        self.client.force_authenticate(user=self.user_3)
+        url = reverse('user-analytics-list')
+
+        response = self.client.get(url)
+        data = response.data
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data), User.objects.count())
+        expected_results = [self.result_1_3.id, self.result_2_3.id, self.result_3_3.id]
+        results_from_response = [result['quiz_results'] for result in data if result['id'] == self.user_3.id]
+        results_id = [result['id'] for result in results_from_response[0]]
+        self.assertEqual(sorted(results_id), sorted(expected_results))
+
+    def test_user_analytics_detail(self):
+        self.client.force_authenticate(user=self.user_3)
+        url = reverse('user-analytics-detail', args=[self.user_3.id])
+
+        response = self.client.get(url)
+        data = response.data
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data['quiz_results']), UserQuizResult.objects.filter(
+                             participant_id=self.user_3.id, progress_status=QuizProgressStatus.COMPLETED.value).count())
+        expected_results = [self.result_1_3.id, self.result_2_3.id, self.result_3_3.id]
+        results_from_response = [result['id'] for result in data['quiz_results']]
+        self.assertEqual(sorted(results_from_response), sorted(expected_results))
 
     def test_quiz_list_non_owner(self):
         self.client.force_authenticate(user=self.user_4)
