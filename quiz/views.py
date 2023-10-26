@@ -11,10 +11,13 @@ from common.enums import QuizProgressStatus
 from common.permissions import (
     FrequencyLimit,
     IsCompanyAdmin,
+    IsCompanyMember,
     IsCompanyOwner,
+    IsStartedStatus,
     IsUserQuizResultParticipant,
     ReadOnly,
 )
+from common.views import get_user_quiz_result_response
 from company.models import Company
 from quiz.models import Quiz, UserQuizResult
 from quiz.serializers import QuizDetailSerializer, QuizSerializer, UserQuizResultSerializer
@@ -36,7 +39,11 @@ class QuizViewSet(viewsets.ModelViewSet):
         if self.action in ('quiz_start', ):
             permission_classes = (IsAuthenticated, FrequencyLimit)
         elif self.action in ('quiz_complete', ):
+            permission_classes = (IsUserQuizResultParticipant, IsStartedStatus)
+        elif self.action in ('user_quiz_results', ):
             permission_classes = (IsUserQuizResultParticipant, )
+        elif self.action in ('company_quiz_results', 'company_member_quiz_results'):
+            permission_classes = (IsCompanyOwner | IsCompanyAdmin, IsCompanyMember)
 
         return [permission() for permission in permission_classes]
 
@@ -45,7 +52,7 @@ class QuizViewSet(viewsets.ModelViewSet):
 
         if self.action in ('retrieve', 'create', 'partial_update', 'quiz_start'):
             serializer_class = QuizDetailSerializer
-        if self.action == 'quiz_complete':
+        if self.action in ('quiz_complete', 'company_quiz_results', 'company_member_quiz_results', 'user_quiz_results'):
             serializer_class = UserQuizResultSerializer
 
         return serializer_class
@@ -81,3 +88,42 @@ class QuizViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer_class()(quiz_result)
         cache_user_quiz_response(quiz_result, request.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'])
+    def company_quiz_results(self, request, company_pk=None):
+        if not company_pk:
+            raise NotFound({'message': _('Page not found.')})
+
+        queryset = UserQuizResult.objects.filter(
+            participant__in=Company.get_members(company_pk),
+            company_id=company_pk,
+            progress_status=QuizProgressStatus.COMPLETED.value
+        ).order_by(*self.ordering)
+
+        return get_user_quiz_result_response(self, request, queryset)
+
+    @action(detail=False, methods=['get'])
+    def company_member_quiz_results(self, request, company_pk=None, member_pk=None):
+        if not company_pk or not member_pk:
+            raise NotFound({'message': _('Page not found.')})
+
+        queryset = UserQuizResult.objects.filter(
+            participant_id=member_pk,
+            company_id=company_pk,
+            progress_status=QuizProgressStatus.COMPLETED.value
+        ).order_by(*self.ordering)
+
+        return get_user_quiz_result_response(self, request, queryset)
+
+    @action(detail=False, methods=['get'])
+    def user_quiz_results(self, request, company_pk=None, pk=None):
+        if not pk:
+            raise NotFound({'message': _('Page not found.')})
+
+        queryset = UserQuizResult.objects.filter(
+            participant_id=request.user.id,
+            quiz_id=pk,
+            progress_status=QuizProgressStatus.COMPLETED.value
+        ).order_by(*self.ordering)
+
+        return get_user_quiz_result_response(self, request, queryset)

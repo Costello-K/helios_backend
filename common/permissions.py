@@ -31,7 +31,8 @@ class IsCompanyOwner(permissions.BasePermission):
     Grants access to the object only to the company owner
     """
     def has_permission(self, request, view):
-        if view.action in ['create', 'revoke', 'remove_user', 'list', 'admins', 'appoint_admin', 'remove_admin']:
+        if view.action in ['create', 'revoke', 'remove_user', 'list', 'admins', 'appoint_admin', 'remove_admin',
+                           'quiz_complete', 'company_quiz_results', 'company_member_quiz_results']:
             company_pk = request.parser_context.get('kwargs', {}).get('company_pk')
 
             if company_pk is None:
@@ -84,7 +85,7 @@ class IsCompanyAdmin(permissions.BasePermission):
     Grants access to the object only to the administrator
     """
     def has_permission(self, request, view):
-        if view.action in ['create', 'list']:
+        if view.action in ['create', 'list', 'company_quiz_results', 'company_member_quiz_results']:
             company_pk = request.parser_context.get('kwargs', {}).get('company_pk')
 
             if company_pk is None:
@@ -101,6 +102,23 @@ class IsCompanyAdmin(permissions.BasePermission):
         elif hasattr(instance, 'owner'):
             return instance.companymember_set.filter(member=request.user, admin=True).exists()
         return False
+
+
+class IsCompanyMember(permissions.BasePermission):
+    """
+    Provides access to company members only
+    """
+    def has_permission(self, request, view):
+        if view.action == 'company_member_quiz_results':
+            company_pk = request.parser_context.get('kwargs', {}).get('company_pk')
+            member_pk = request.parser_context.get('kwargs', {}).get('member_pk')
+
+            if member_pk is None:
+                return False
+
+            return Company.objects.filter(id=company_pk, companymember__member_id=member_pk).exists()
+
+        return super().has_permission(request, view)
 
 
 class FrequencyLimit(permissions.BasePermission):
@@ -140,5 +158,17 @@ class IsUserQuizResultParticipant(permissions.BasePermission):
         if quiz_pk is None:
             return False
 
-        return UserQuizResult.objects.filter(participant=request.user, quiz_id=quiz_pk,
-                                             progress_status=QuizProgressStatus.STARTED.value).exists()
+        return UserQuizResult.objects.filter(participant=request.user, quiz_id=quiz_pk).exists()
+
+
+class IsStartedStatus(permissions.BasePermission):
+    """
+    Allows access to an object if it has a STARTED progress_status
+    """
+    def has_permission(self, request, view):
+        quiz_pk = request.parser_context.get('kwargs', {}).get('pk')
+
+        if quiz_pk is None:
+            return False
+
+        return UserQuizResult.objects.filter(quiz_id=quiz_pk, progress_status=QuizProgressStatus.STARTED.value).exists()
