@@ -285,6 +285,7 @@ class QuizTests(TestCase):
         self.assertEqual(Quiz.objects.count(), 3)
 
     def test_create_complete_quiz_result(self):
+        UserQuizResult.objects.all().delete()
         self.client.force_authenticate(user=self.user_1)
 
         # create quiz #3
