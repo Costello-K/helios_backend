@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
-from common.enums import InvitationStatus
+from common.enums import InvitationStatus, QuizProgressStatus
 from user.serializers import UserSerializer
 
 from .models import Company, CompanyMember, InvitationToCompany
@@ -26,10 +26,23 @@ class CompanySerializer(serializers.ModelSerializer):
 
 class CompanyMemberSerializer(serializers.ModelSerializer):
     member = UserSerializer(read_only=True)
+    last_quiz_completion_time = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = CompanyMember
         exclude = ('company', )
+
+    @staticmethod
+    def get_last_quiz_completion_time(company_member):
+        last_user_quiz_result = company_member.member.quiz_participant_result.filter(
+            company=company_member.company,
+            progress_status=QuizProgressStatus.COMPLETED.value
+        )
+
+        if not last_user_quiz_result.exists():
+            return None
+
+        return last_user_quiz_result.order_by('updated_at').last().updated_at
 
 
 class InvitationToCompanySerializer(serializers.ModelSerializer):

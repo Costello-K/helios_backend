@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-25 15:42+0300\n"
+"POT-Creation-Date: 2023-10-26 23:24+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,7 +21,7 @@ msgstr ""
 "100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || "
 "(n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
 
-#: .\common\permissions.py:127
+#: .\common\permissions.py:145
 msgid "You have exceeded the limit. The quiz will be available via {}."
 msgstr "Ви перевищили ліміт. Тест буде доступний через {}."
 
@@ -41,11 +41,11 @@ msgstr "видимість"
 msgid "owner"
 msgstr "власник"
 
-#: .\company\models.py:25 .\company\models.py:111 .\user\models.py:53
+#: .\company\models.py:25 .\company\models.py:114 .\user\models.py:53
 msgid "The user is already a member of the company."
 msgstr "Користувач вже є учасником компанії."
 
-#: .\company\models.py:27 .\company\serializers.py:52
+#: .\company\models.py:27 .\company\serializers.py:65
 msgid "The owner cannot be a member of the company."
 msgstr "Власник не може бути членом компанії."
 
@@ -63,52 +63,52 @@ msgstr "Користувач вже є адміністратором компа
 msgid "The user is not a company administrator."
 msgstr "Користувач не є адміністратором компанії."
 
-#: .\company\models.py:76
+#: .\company\models.py:79
 msgid "The user is not a member of this company."
 msgstr "Користувач не є членом цієї компанії."
 
-#: .\company\models.py:79 .\company\models.py:85 .\company\models.py:100
+#: .\company\models.py:82 .\company\models.py:88 .\company\models.py:103
 #: .\quiz\models.py:17 .\quiz\models.py:113 .\user\models.py:42
 msgid "company"
 msgstr "компанія"
 
-#: .\company\models.py:80
+#: .\company\models.py:83
 msgid "companies"
 msgstr "компанії"
 
-#: .\company\models.py:84
+#: .\company\models.py:87
 msgid "member"
 msgstr "учасник"
 
-#: .\company\models.py:86
+#: .\company\models.py:89
 msgid "admin"
 msgstr "адмін"
 
-#: .\company\models.py:89
+#: .\company\models.py:92
 msgid "company member"
 msgstr "учасник компанії"
 
-#: .\company\models.py:90
+#: .\company\models.py:93
 msgid "company members"
 msgstr "учасники компанії"
 
-#: .\company\models.py:96
+#: .\company\models.py:99
 msgid "recipient"
 msgstr "отримувач"
 
-#: .\company\models.py:102 .\user\models.py:44
+#: .\company\models.py:105 .\user\models.py:44
 msgid "status"
 msgstr "статус"
 
-#: .\company\models.py:109 .\company\models.py:119
+#: .\company\models.py:112 .\company\models.py:122
 msgid "The invitation has already been processed."
 msgstr "Запрошення вже було опрацьоване."
 
-#: .\company\models.py:124
+#: .\company\models.py:127
 msgid "invitation to company"
 msgstr "запрошення в компанію"
 
-#: .\company\models.py:125
+#: .\company\models.py:128
 msgid "invitations to companies"
 msgstr "запрошення в компанії"
 
@@ -116,8 +116,9 @@ msgstr "запрошення в компанії"
 msgid "User removed from the company."
 msgstr "Користувач видалений з компанії."
 
-#: .\company\views.py:80 .\company\views.py:88 .\quiz\views.py:67
-#: .\quiz\views.py:77 .\user\views.py:38 .\user\views.py:45
+#: .\company\views.py:80 .\company\views.py:88 .\quiz\views.py:93
+#: .\quiz\views.py:103 .\quiz\views.py:114 .\quiz\views.py:127
+#: .\quiz\views.py:140 .\user\views.py:38 .\user\views.py:45
 msgid "Page not found."
 msgstr "Сторінку не знайдено."
 
@@ -249,17 +250,21 @@ msgstr "Вікторину вже завершено."
 msgid "Answer data is required"
 msgstr "Дані відповідей є обов'язковими"
 
-#: .\quiz\serializers.py:98
+#: .\quiz\serializers.py:122
 msgid "A quiz must have at least {} questions."
 msgstr "Тест має містити принаймні {} запитань."
 
-#: .\quiz\serializers.py:105
+#: .\quiz\serializers.py:129
 msgid "A question must have at least {} answers."
 msgstr "Тест має містити принаймні {} запитань."
 
-#: .\quiz\serializers.py:108
+#: .\quiz\serializers.py:132
 msgid "At least one answer must be marked as correct."
 msgstr "Принаймні одна відповідь має бути позначена як правильна."
+
+#: .\services\export\response_builder.py:14
+msgid "This format is not supported."
+msgstr "Даний формат не підтримується."
 
 #: .\templates\account_email_activation.html:4
 #, python-format
@@ -396,22 +401,22 @@ msgstr "запит до компанії"
 msgid "requests to companies"
 msgstr "запити до компаній"
 
-#: .\user\serializers.py:47
+#: .\user\serializers.py:59
 msgid "Password is required for user creation."
 msgstr "Поле пароль є обов'язковим"
 
-#: .\user\serializers.py:52
+#: .\user\serializers.py:64
 msgid "Password and confirm_password are different."
 msgstr "Пароль та підтвердження пароля не співпадають."
 
-#: .\user\serializers.py:83
+#: .\user\serializers.py:95
 msgid "Maximum image size allowed is {} Mb"
 msgstr "Максимальний допустимий розмір файлу {} Mб"
 
-#: .\user\serializers.py:90
+#: .\user\serializers.py:102
 msgid "Email field is required."
 msgstr "Поле емейл є обов'язковим."
 
-#: .\user\serializers.py:93
+#: .\user\serializers.py:105
 msgid "Email is already in use."
 msgstr "Емейл вже існує."

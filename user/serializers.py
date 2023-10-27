@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
-from common.enums import RequestStatus
+from common.enums import QuizProgressStatus, RequestStatus
 from company.models import Company
 from internship_meduzzen_backend.settings import DEFAULT_USER_AVATAR_URL, USER_AVATAR_MAX_SIZE_MB
 from user.models import RequestToCompany
@@ -21,10 +21,22 @@ class UserSerializer(serializers.ModelSerializer):
     """
     password = serializers.CharField(write_only=True, required=False)
     confirm_password = serializers.CharField(write_only=True, required=False)
+    rating = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'password', 'confirm_password', 'avatar']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'password', 'confirm_password', 'avatar',
+                  'rating']
+
+    @staticmethod
+    def get_rating(user):
+        last_user_quiz_result = user.quiz_participant_result.filter(
+            progress_status=QuizProgressStatus.COMPLETED.value)
+
+        if not last_user_quiz_result.exists():
+            return None
+
+        return last_user_quiz_result.last().user_rating
 
     def create(self, validated_data):
         """

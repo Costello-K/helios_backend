@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from rest_framework import status, viewsets
@@ -20,13 +21,24 @@ from common.permissions import (
 from common.views import get_user_quiz_result_response
 from company.models import Company
 from quiz.models import Quiz, UserQuizResult
-from quiz.serializers import QuizDetailSerializer, QuizSerializer, UserQuizResultSerializer
+from quiz.serializers import (
+    QuizAnalyticsSerializer,
+    QuizDetailSerializer,
+    QuizSerializer,
+    UserAnalyticsSerializer,
+    UserQuizResultDetailSerializer,
+)
+
+User = get_user_model()
 
 
 class QuizViewSet(viewsets.ModelViewSet):
     ordering = ('created_at',)
 
     def get_queryset(self):
+        if self.action in ('quizzes_analytics', 'users_analytics', 'user_analytics'):
+            return None
+
         company = get_object_or_404(Company, id=self.kwargs.get('company_pk'))
 
         queryset = Quiz.objects.filter(company=company).order_by(*self.ordering)
@@ -44,6 +56,8 @@ class QuizViewSet(viewsets.ModelViewSet):
             permission_classes = (IsUserQuizResultParticipant, )
         elif self.action in ('company_quiz_results', 'company_member_quiz_results'):
             permission_classes = (IsCompanyOwner | IsCompanyAdmin, IsCompanyMember)
+        elif self.action in ('quizzes_analytics', 'users_analytics', 'user_analytics'):
+            permission_classes = (IsAuthenticated, )
 
         return [permission() for permission in permission_classes]
 
@@ -52,8 +66,13 @@ class QuizViewSet(viewsets.ModelViewSet):
 
         if self.action in ('retrieve', 'create', 'partial_update', 'quiz_start'):
             serializer_class = QuizDetailSerializer
-        if self.action in ('quiz_complete', 'company_quiz_results', 'company_member_quiz_results', 'user_quiz_results'):
-            serializer_class = UserQuizResultSerializer
+        elif self.action in ('quiz_complete', 'company_quiz_results', 'company_member_quiz_results',
+                             'user_quiz_results'):
+            serializer_class = UserQuizResultDetailSerializer
+        elif self.action in ('quizzes_analytics', ):
+            serializer_class = QuizAnalyticsSerializer
+        elif self.action in ('users_analytics', 'user_analytics'):
+            serializer_class = UserAnalyticsSerializer
 
         return serializer_class
 
@@ -64,7 +83,7 @@ class QuizViewSet(viewsets.ModelViewSet):
 
         if IsCompanyOwner().has_object_permission(self.request, self, company) \
                 or IsCompanyAdmin().has_object_permission(self.request, self, company):
-            context.update({'add_right_answer': True})
+            context.update({'full_access': True})
 
         return context
 
@@ -127,3 +146,24 @@ class QuizViewSet(viewsets.ModelViewSet):
         ).order_by(*self.ordering)
 
         return get_user_quiz_result_response(self, request, queryset)
+
+    @action(detail=False, methods=['get'])
+    def quizzes_analytics(self, request):
+        queryset = Quiz.objects.all().order_by(*self.ordering)
+
+        serializer = self.get_serializer_class()(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'])
+    def users_analytics(self, request):
+        queryset = User.objects.all().order_by(*self.ordering)
+
+        serializer = self.get_serializer_class()(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['get'])
+    def user_analytics(self, request, pk=None):
+        queryset = get_object_or_404(User, id=pk)
+
+        serializer = self.get_serializer_class()(queryset)
+        return Response(serializer.data, status=status.HTTP_200_OK)
