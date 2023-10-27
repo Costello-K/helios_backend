@@ -15,4 +15,19 @@ urlpatterns = [
         QuizViewSet.as_view({'post': 'quiz_complete'}),
         name='quiz-complete'
     ),
+    path(
+        '<int:company_pk>/quizzes/results/',
+        QuizViewSet.as_view({'get': 'company_quiz_results'}),
+        name='company-quiz-results-list'
+    ),
+    path(
+        '<int:company_pk>/quizzes/results/<int:member_pk>/',
+        QuizViewSet.as_view({'get': 'company_member_quiz_results'}),
+        name='company-member-quiz-results-list'
+    ),
+    path(
+        '<int:company_pk>/quizzes/<int:pk>/results/',
+        QuizViewSet.as_view({'get': 'user_quiz_results'}),
+        name='user-quiz-results-list'
+    ),
 ]

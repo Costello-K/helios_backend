@@ -60,7 +60,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def members(self, request, pk=None):
-        queryset = Company.get_members(pk).order_by(*self.ordering)
+        queryset = Company.get_company_members(pk).order_by(*self.ordering)
         return get_serializer_paginate(self, queryset, CompanyMemberSerializer)
 
     @action(detail=True, methods=['delete'])

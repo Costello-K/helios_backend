@@ -57,14 +57,17 @@ class Company(TimeStampedModel):
         return self.invitationtocompany_set.all()
 
     @classmethod
-    def get_members(cls, company_id):
+    def get_company_members(cls, company_id):
         company = get_object_or_404(cls, id=company_id)
         return company.companymember_set.all()
 
     @classmethod
+    def get_members(cls, company_id):
+        return cls.get_company_members(company_id).values('member')
+
+    @classmethod
     def get_admins(cls, company_id):
-        members = cls.get_members(company_id)
-        return members.filter(admin=True)
+        return cls.get_company_members(company_id).filter(admin=True)
 
     @classmethod
     def remove_member(cls, company_id, member):
