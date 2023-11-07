@@ -36,6 +36,14 @@ class CustomUser(AbstractUser, TimeStampedModel):
     def my_invitations(self):
         return self.received_invitations.all()
 
+    @property
+    def my_member_companies(self):
+        return Company.objects.filter(companymember__member=self)
+
+    @property
+    def my_admin_companies(self):
+        return Company.objects.filter(companymember__member=self, companymember__admin=True)
+
 
 class RequestToCompany(TimeStampedModel):
     sender = models.ForeignKey(get_user_model(), verbose_name=_('sender'), on_delete=models.CASCADE)

@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from common.enums import RequestStatus
 from common.permissions import IsCompanyOwner, IsOwner, IsRequestSender, ReadOnly
 from common.views import get_serializer_paginate
-from company.serializers import InvitationToCompanySerializer
+from company.serializers import CompanySerializer, InvitationToCompanySerializer
 from services.decorators import log_database_changes
 
 from .models import RequestToCompany
@@ -37,14 +37,28 @@ class UserViewSet(viewsets.ModelViewSet):
         if not pk or pk != request.user.id:
             raise NotFound({'message': _('Page not found.')})
         queryset = request.user.my_requests.order_by(*self.ordering)
-        return get_serializer_paginate(self, queryset, RequestToCompanySerializer)
+        return get_serializer_paginate(self, queryset, RequestToCompanySerializer, context={'request': request})
 
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def invitations(self, request, pk=None):
         if not pk or pk != request.user.id:
             raise NotFound({'message': _('Page not found.')})
         queryset = request.user.my_invitations.order_by(*self.ordering)
-        return get_serializer_paginate(self, queryset, InvitationToCompanySerializer)
+        return get_serializer_paginate(self, queryset, InvitationToCompanySerializer, context={'request': request})
+
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def member_companies(self, request, pk=None):
+        if not pk or pk != request.user.id:
+            raise NotFound({'message': _('Page not found.')})
+        queryset = request.user.my_member_companies.order_by(*self.ordering)
+        return get_serializer_paginate(self, queryset, CompanySerializer, context={'request': request})
+
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def admin_companies(self, request, pk=None):
+        if not pk or pk != request.user.id:
+            raise NotFound({'message': _('Page not found.')})
+        queryset = request.user.my_admin_companies.order_by(*self.ordering)
+        return get_serializer_paginate(self, queryset, CompanySerializer, context={'request': request})
 
 
 class RequestToCompanyViewSet(viewsets.ModelViewSet):
@@ -79,7 +93,7 @@ class RequestToCompanyViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def cancell(self, request, user_pk=None, pk=None):
-        instance = get_object_or_404(RequestToCompany, company_id=pk, sender_id=user_pk)
+        instance = get_object_or_404(RequestToCompany, id=pk, sender_id=user_pk)
         instance.status_update(RequestStatus.CANCELLED.value)
-        serializer = self.serializer_class(instance)
+        serializer = self.serializer_class(instance, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)

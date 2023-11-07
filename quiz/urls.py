@@ -41,4 +41,9 @@ urlpatterns = [
     path('analytics/quizzes/', QuizViewSet.as_view({'get': 'quizzes_analytics'}), name='quiz-analytics-list'),
     path('analytics/users/', QuizViewSet.as_view({'get': 'users_analytics'}), name='user-analytics-list'),
     path('analytics/users/<int:pk>/', QuizViewSet.as_view({'get': 'user_analytics'}), name='user-analytics-detail'),
+    path(
+        'analytics/companies/<int:pk>/',
+        QuizViewSet.as_view({'get': 'company_analytics'}),
+        name='company-analytics-detail',
+    ),
 ]

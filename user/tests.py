@@ -284,7 +284,7 @@ class RequestToCompanyTests(TestCase):
 
     def test_cancell_request(self):
         self.client.force_authenticate(user=self.user_1)
-        url = reverse('user-request-cancell', args=[self.user_1.id, self.company_2.id])
+        url = reverse('user-request-cancell', args=[self.user_1.id, self.request_1_2.id])
 
         response = self.client.post(url, format='json')
 
@@ -293,7 +293,7 @@ class RequestToCompanyTests(TestCase):
 
     def test_non_sender_cancell_request(self):
         self.client.force_authenticate(user=self.user_2)
-        url = reverse('user-request-cancell', args=[self.user_1.id, self.company_2.id])
+        url = reverse('user-request-cancell', args=[self.user_1.id, self.request_1_2.id])
 
         response = self.client.post(url, format='json')
 

@@ -21,3 +21,9 @@ class RequestStatus(StrEnum):
 class QuizProgressStatus(StrEnum):
     STARTED = auto()
     COMPLETED = auto()
+
+
+# enums for Notification model
+class NotificationStatus(StrEnum):
+    SENT = auto()
+    VIEWED = auto()

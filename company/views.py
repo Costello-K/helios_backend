@@ -29,6 +29,11 @@ class CompanyViewSet(viewsets.ModelViewSet):
     serializer_class = CompanySerializer
     ordering = ('created_at', )
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({'request': self.request})
+        return context
+
     def get_permissions(self):
         if self.action in ['remove_me', 'create']:
             permission_classes = [IsAuthenticated]
@@ -41,13 +46,20 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = Company.objects.all()
-        owner_id = self.request.data.get('user_id', None)
+        owner_id = self.request.query_params.get('user_id', None)
 
-        if owner_id != self.request.user.id:
-            queryset = queryset.filter(visibility=True)
+        if self.action in ('retrieve', 'partial_update', 'destroy'):
+            company_id = self.kwargs.get('pk', None)
+            queryset = queryset.filter(id=company_id)
 
-        if owner_id:
-            queryset = queryset.filter(owner_id=owner_id)
+            if queryset.exists() and queryset.first().owner_id != self.request.user.id:
+                queryset = queryset.filter(visibility=True)
+        else:
+            if owner_id != str(self.request.user.id):
+                queryset = queryset.filter(visibility=True)
+
+            if owner_id:
+                queryset = queryset.filter(owner_id=owner_id)
 
         queryset = queryset.order_by(*self.ordering)
 
@@ -56,12 +68,12 @@ class CompanyViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def admins(self, request, company_pk=None):
         queryset = Company.get_admins(company_pk).order_by(*self.ordering)
-        return get_serializer_paginate(self, queryset, CompanyMemberSerializer)
+        return get_serializer_paginate(self, queryset, CompanyMemberSerializer, context={'request': request})
 
     @action(detail=False, methods=['get'])
     def members(self, request, pk=None):
         queryset = Company.get_company_members(pk).order_by(*self.ordering)
-        return get_serializer_paginate(self, queryset, CompanyMemberSerializer)
+        return get_serializer_paginate(self, queryset, CompanyMemberSerializer, context={'request': request})
 
     @action(detail=True, methods=['delete'])
     def remove_user(self, request, company_pk=None, pk=None):
@@ -113,7 +125,7 @@ class InvitationToCompanyViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def revoke(self, request, company_pk=None, pk=None):
-        invitation = get_object_or_404(InvitationToCompany, company_id=company_pk, recipient_id=pk)
+        invitation = get_object_or_404(InvitationToCompany, company_id=company_pk, id=pk)
         invitation.status_update(InvitationStatus.REVOKED.value)
-        serializer = self.serializer_class(invitation)
+        serializer = self.serializer_class(invitation, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)

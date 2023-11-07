@@ -22,11 +22,17 @@ class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=False)
     confirm_password = serializers.CharField(write_only=True, required=False)
     rating = serializers.SerializerMethodField(read_only=True)
+    is_company_admin = serializers.SerializerMethodField(read_only=True)
+    is_company_member = serializers.SerializerMethodField(read_only=True)
+    is_active_invitation = serializers.SerializerMethodField(read_only=True)
+    last_company_quiz_for_user = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'password', 'confirm_password', 'avatar',
-                  'rating']
+        fields = [
+            'id', 'username', 'first_name', 'last_name', 'email', 'password', 'confirm_password', 'avatar', 'rating',
+            'is_company_admin', 'is_company_member', 'is_active_invitation', 'last_company_quiz_for_user',
+        ]
 
     @staticmethod
     def get_rating(user):
@@ -37,6 +43,44 @@ class UserSerializer(serializers.ModelSerializer):
             return None
 
         return last_user_quiz_result.last().user_rating
+
+    def get_is_company_admin(self, user):
+        if self.context and self.context.get('request'):
+            company_id = self.context['request'].query_params.get('company_id')
+            if company_id:
+                return user.my_admin_companies.filter(id=company_id).exists()
+        return None
+
+    def get_is_company_member(self, user):
+        if self.context and self.context.get('request'):
+            company_id = self.context['request'].query_params.get('company_id')
+            if company_id:
+                return user.my_member_companies.filter(id=company_id).exists()
+        return None
+
+    def get_is_active_invitation(self, user):
+        if self.context and self.context.get('request'):
+            company_id = self.context['request'].query_params.get('company_id')
+            if company_id:
+                return user.my_invitations.filter(company_id=company_id, status=RequestStatus.PENDING.value).exists()
+        return None
+
+    def get_last_company_quiz_for_user(self, user):
+        company_id = self.context['request'].query_params.get('company_id')
+        if not company_id:
+            return None
+
+        user_company_quiz_results = user.quiz_participant_result.filter(company_id=company_id)
+        if not user_company_quiz_results.exists():
+            return None
+
+        last_user_company_quiz_result = user_company_quiz_results.order_by('updated_at').last()
+        return {
+            'completed': last_user_company_quiz_result.progress_status == QuizProgressStatus.COMPLETED.value,
+            'quiz_title': last_user_company_quiz_result.quiz.title,
+            'created_at': last_user_company_quiz_result.created_at,
+            'updated_at': last_user_company_quiz_result.updated_at,
+        }
 
     def create(self, validated_data):
         """

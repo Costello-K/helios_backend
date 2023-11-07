@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
-from common.enums import InvitationStatus, QuizProgressStatus
+from common.enums import InvitationStatus, QuizProgressStatus, RequestStatus
 from user.serializers import UserSerializer
 
 from .models import Company, CompanyMember, InvitationToCompany
@@ -13,15 +13,42 @@ User = get_user_model()
 
 class CompanySerializer(serializers.ModelSerializer):
     owner = UserSerializer(read_only=True)
+    is_admin = serializers.SerializerMethodField(read_only=True)
+    is_member = serializers.SerializerMethodField(read_only=True)
+    is_active_request = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Company
-        fields = '__all__'
+        fields = ('id', 'name', 'description', 'visibility', 'owner', 'is_admin', 'is_member', 'is_active_request')
 
     def create(self, validated_data):
         validated_data['owner'] = self.context['request'].user
         company = Company.objects.create(**validated_data)
         return company
+
+    def get_is_admin(self, company):
+        if self.context and self.context.get('request'):
+            user = self.context['request'].user
+            if user and user.is_authenticated:
+                return company.companymember_set.filter(member=self.context.get('request').user, admin=True).exists()
+        return None
+
+    def get_is_member(self, company):
+        if self.context and self.context.get('request'):
+            user = self.context['request'].user
+            if user and user.is_authenticated:
+                return company.companymember_set.filter(member=self.context.get('request').user).exists()
+        return None
+
+    def get_is_active_request(self, company):
+        if self.context and self.context.get('request'):
+            user = self.context['request'].user
+            if user and user.is_authenticated:
+                return company.requesttocompany_set.filter(
+                    sender=self.context.get('request').user,
+                    status=RequestStatus.PENDING.value
+                ).exists()
+        return None
 
 
 class CompanyMemberSerializer(serializers.ModelSerializer):

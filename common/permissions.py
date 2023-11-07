@@ -65,13 +65,13 @@ class IsRequestSender(permissions.BasePermission):
     """
     def has_permission(self, request, view):
         if view.action == 'cancell':
-            company_pk = request.parser_context.get('kwargs', {}).get('pk')
+            pk = request.parser_context.get('kwargs', {}).get('pk')
             sender_pk = request.parser_context.get('kwargs', {}).get('user_pk')
 
-            if company_pk is None or sender_pk is None:
+            if pk is None or sender_pk is None:
                 return False
 
-            instance = get_object_or_404(RequestToCompany, company_id=company_pk, sender_id=sender_pk)
+            instance = get_object_or_404(RequestToCompany, id=pk, sender_id=sender_pk)
             return instance.sender == request.user
 
         return super().has_permission(request, view)
@@ -142,7 +142,7 @@ class FrequencyLimit(permissions.BasePermission):
             delta_time = timezone.timedelta(days=quiz.frequency) - time_since_last_completion
             if delta_time > timezone.timedelta(0):
                 raise NotAcceptable(
-                    {'message': _('You have exceeded the limit. The quiz will be available via {}.').format(delta_time)}
+                    {'message': _('You have exceeded the limit. The quiz will be available via {}').format(delta_time)}
                 )
 
         return True
@@ -172,3 +172,19 @@ class IsStartedStatus(permissions.BasePermission):
             return False
 
         return UserQuizResult.objects.filter(quiz_id=quiz_pk, progress_status=QuizProgressStatus.STARTED.value).exists()
+
+
+class IsNotificationRecipient(permissions.BasePermission):
+    """
+    Grants access to the objects only to the notification recipient
+    """
+    def has_permission(self, request, view):
+        user_pk = request.parser_context.get('kwargs', {}).get('user_pk')
+
+        if user_pk is None:
+            return False
+
+        return user_pk == request.user.id
+
+    def has_object_permission(self, request, view, instance):
+        return instance.recipient == request.user
