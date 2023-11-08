@@ -1,10 +1,12 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from common.enums import NotificationStatus
 from common.models import TimeStampedModel
+from notification.schemas import NotificationSchema
 
 User = get_user_model()
 
@@ -27,6 +29,20 @@ class Notification(TimeStampedModel):
     class Meta:
         verbose_name = _('notification')
         verbose_name_plural = _('notifications')
+
+    def save(self, *args, **kwargs):
+        updated_data = {
+            'id': self.id,
+            'recipient_id': self.recipient_id,
+            'text': self.text,
+            'status': self.status,
+        }
+        try:
+            NotificationSchema.model_validate(updated_data)
+        except ValidationError as error:
+            raise serializers.ValidationError(error) from error
+
+        super().save(*args, **kwargs)
 
     def update_status(self, status):
         if self.status == NotificationStatus.VIEWED.value:

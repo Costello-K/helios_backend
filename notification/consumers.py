@@ -6,12 +6,14 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.contrib.auth import get_user_model
 from django.db import close_old_connections
 from django.utils.translation import gettext_lazy as _
+from pydantic import ValidationError
 
 from common.enums import NotificationStatus
 from common.pagination import SettingsPageNumberPagination
 from services.jwt_authenticator import JWTAuthenticator
 
 from .models import Notification
+from .schemas import NotificationWSSchema
 
 User = get_user_model()
 
@@ -29,6 +31,31 @@ class UserNotificationConsumer(AsyncJsonWebsocketConsumer):
     def get_notification_list(self):
         return Notification.objects.filter(recipient_id=self.user_id).order_by(*self.ordering)
 
+    @staticmethod
+    async def get_validate_data(instance):
+        try:
+            if isinstance(instance, dict):
+                notification_data = NotificationWSSchema(
+                    id=instance['id'],
+                    text=instance['text'],
+                    status=instance['status'],
+                    created_at=instance['created_at'],
+                )
+            else:
+                notification_data = NotificationWSSchema(
+                    id=instance.id,
+                    text=instance.text,
+                    status=instance.status,
+                    created_at=instance.created_at,
+                )
+
+            notification_dict = notification_data.model_dump()
+            notification_dict['created_at'] = notification_dict['created_at'].isoformat()
+
+            return notification_dict
+        except Exception as error:
+            raise ValidationError({"error": str(error)}) from error
+
     async def connect(self):
         self.user_id = self.scope['url_route']['kwargs']['user_pk']
         self.user_group_name = f'user_{self.user_id}'
@@ -41,75 +68,72 @@ class UserNotificationConsumer(AsyncJsonWebsocketConsumer):
         await self.accept()
 
     async def receive_json(self, content, **kwargs):
-        access_token = content.get('accessToken', None)
-        notification_id = content.get('id', None)
+        try:
+            access_token = content.get('accessToken', None)
+            update = content.get('update', None)
+            notification_id = content.get('id', None)
 
-        await self.is_authenticated_or_disconnect(access_token)
+            await self.is_authenticated_or_disconnect(access_token)
 
-        if access_token:
-            await self.send_notification_list()
-        elif notification_id:
-            try:
-                notification = await self.get_notification(notification_id)
-                notification.status = NotificationStatus.VIEWED.value
-                await sync_to_async(notification.save)()
+            if access_token:
+                await self.send_notification_list()
+            elif update and notification_id:
+                try:
+                    notification = await self.get_notification(notification_id)
+                    notification.status = NotificationStatus.VIEWED.value
+                    await sync_to_async(notification.save)()
 
-                await self.channel_layer.group_send(
-                    self.user_group_name,
-                    {
-                        'type': 'send_update_notification',
-                        'id': notification.id,
-                        'text': notification.text,
-                        'status': notification.status,
-                        'created_at': notification.created_at.isoformat(),
-                    }
-                )
+                    notification_dict = await self.get_validate_data(notification)
+                    notification_dict['type'] = 'send_update_notification'
 
-            except Notification.DoesNotExist:
-                await self.send_json({'error': _("A notification with given ID does not exist.")})
+                    await self.channel_layer.group_send(
+                        self.user_group_name,
+                        notification_dict,
+                    )
+
+                except Notification.DoesNotExist:
+                    await self.send_json({'error': _("A notification with given ID does not exist.")})
+
+        except Exception as error:
+            await self.send_json({"error": str(error)})
 
     async def send_notification_list(self):
-        queryset = await self.get_notification_list()
-        total_pages = math.ceil(await sync_to_async(queryset.count)() / self.pagination_page_size)
-        count_unviewed_notifications = await sync_to_async(
-            queryset.filter(status=NotificationStatus.SENT.value).count
-        )()
-        pagination_queryset = queryset[:self.pagination_page_size]
+        try:
+            queryset = await self.get_notification_list()
+            total_pages = math.ceil(await sync_to_async(queryset.count)() / self.pagination_page_size)
+            count_unviewed_notifications = await sync_to_async(
+                queryset.filter(status=NotificationStatus.SENT.value).count
+            )()
+            pagination_queryset = queryset[:self.pagination_page_size]
+            notifications_data = [await self.get_validate_data(notification)
+                                  async for notification in pagination_queryset]
 
-        notifications_data = await sync_to_async(
-            lambda data: [
-                {
-                    'id': notification.id,
-                    'text': notification.text,
-                    'status': notification.status,
-                    'created_at': notification.created_at.isoformat(),
-                } for notification in data
-            ]
-        )(pagination_queryset)
-
-        await self.send_json({
-            'notifications': notifications_data,
-            'count_unviewed_notifications': count_unviewed_notifications,
-            'page_size': self.pagination_page_size,
-            'total_pages': total_pages,
-        })
+            await self.send_json({
+                'notifications': notifications_data,
+                'count_unviewed_notifications': count_unviewed_notifications,
+                'page_size': self.pagination_page_size,
+                'total_pages': total_pages,
+            })
+        except Exception as error:
+            await self.send_json({"error": str(error)})
 
     async def send_create_notification(self, event):
-        await self.send_json({
-            'create': event['create'],
-            'id': event['id'],
-            'text': event['text'],
-            'status': event['status'],
-            'created_at': event['created_at'],
-        })
+        try:
+            notification_dict = await self.get_validate_data(event)
+            notification_dict['create'] = True
+
+            await self.send_json(notification_dict)
+        except Exception as error:
+            await self.send_json({"error": str(error)})
 
     async def send_update_notification(self, event):
-        await self.send_json({
-            'id': event['id'],
-            'text': event['text'],
-            'status': event['status'],
-            'created_at': event['created_at'],
-        })
+        try:
+            notification_dict = await self.get_validate_data(event)
+            notification_dict['update'] = True
+
+            await self.send_json(notification_dict)
+        except Exception as error:
+            await self.send_json({"error": str(error)})
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
@@ -127,4 +151,4 @@ class UserNotificationConsumer(AsyncJsonWebsocketConsumer):
         if self.scope['user'].is_authenticated and self.scope['user'].id == self.user_id:
             return True
 
-        await self.disconnect()
+        await self.disconnect(4401)

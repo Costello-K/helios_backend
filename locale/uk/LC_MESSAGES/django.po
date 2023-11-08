@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-07 04:11+0200\n"
+"POT-Creation-Date: 2023-11-08 16:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -96,7 +96,7 @@ msgstr "учасники компанії"
 msgid "recipient"
 msgstr "отримувач"
 
-#: .\company\models.py:105 .\notification\models.py:22 .\user\models.py:52
+#: .\company\models.py:105 .\notification\models.py:24 .\user\models.py:52
 msgid "status"
 msgstr "статус"
 
@@ -140,42 +140,41 @@ msgstr "Англійська"
 msgid "Ukraine"
 msgstr "Українська"
 
-#: .\notification\consumers.py:69
+#: .\notification\consumers.py:95
 msgid "A notification with given ID does not exist."
 msgstr "Повідомлення з даним ID не існує."
 
-#: .\notification\models.py:15
+#: .\notification\models.py:17
 msgid "user"
 msgstr "отримувач"
 
-#: .\notification\models.py:20 .\quiz\models.py:99
+#: .\notification\models.py:22 .\quiz\models.py:99
 msgid "text"
 msgstr "текст"
 
-#: .\notification\models.py:28
+#: .\notification\models.py:30
 msgid "notification"
 msgstr "повідомлення"
 
-#: .\notification\models.py:29
+#: .\notification\models.py:31
 msgid "notifications"
 msgstr "повідомлення"
 
-#: .\notification\models.py:33
+#: .\notification\models.py:49
 msgid "The notification has already been viewed"
 msgstr "Повідомлення вже було переглянуто."
 
-#: .\notification\models.py:35
+#: .\notification\models.py:51
 msgid "You cannot set this status yourself"
 msgstr "Ви не можете встановити цей статус самостійно"
 
-#: .\notification\signals.py:22
-#, python-brace-format
+#: .\notification\signals.py:20
 msgid ""
 "The \"{company_name}\" company created a new quiz called \"{quiz_title}\". "
 "If you want to go through it, go to the company page."
 msgstr ""
-"Компанія \"{company_name}\" створила нову вікторину з назвою \"{quiz_title}\". "
-"Якщо ви хочете пройти її, перейдіть на сторінку компанії."
+"Компанія \"{company_name}\" створила нову вікторину з назвою "
+"\"{quiz_title}\". Якщо ви хочете пройти її, перейдіть на сторінку компанії."
 
 #: .\quiz\models.py:18
 msgid "title"
