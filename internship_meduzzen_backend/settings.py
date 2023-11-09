@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'social_django',
     'corsheaders',
     'drf_yasg',
+    'django_celery_beat',
 
     'api_v1',
     'user',
@@ -338,6 +339,12 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
+
+
+# CELERY
+CELERY_BROKER_URL = f'redis://default:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}'
+CELERY_RESULT_BACKEND = f'redis://default:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}'
+
 
 # Quiz settings
 MIN_COUNT_QUESTIONS = 2
