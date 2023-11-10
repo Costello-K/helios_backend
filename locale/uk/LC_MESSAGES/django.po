@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-08 16:11+0200\n"
+"POT-Creation-Date: 2023-11-18 00:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -132,11 +132,11 @@ msgstr "Адміністратора було додано до компанії
 msgid "The admin was removed from the company."
 msgstr "Адміністратор був видалений з компанії."
 
-#: .\internship_meduzzen_backend\settings.py:161
+#: .\internship_meduzzen_backend\settings.py:162
 msgid "English"
 msgstr "Англійська"
 
-#: .\internship_meduzzen_backend\settings.py:162
+#: .\internship_meduzzen_backend\settings.py:163
 msgid "Ukraine"
 msgstr "Українська"
 
@@ -169,6 +169,7 @@ msgid "You cannot set this status yourself"
 msgstr "Ви не можете встановити цей статус самостійно"
 
 #: .\notification\signals.py:20
+#, python-brace-format
 msgid ""
 "The \"{company_name}\" company created a new quiz called \"{quiz_title}\". "
 "If you want to go through it, go to the company page."
@@ -458,3 +459,17 @@ msgstr "Поле емейл є обов'язковим."
 #: .\user\serializers.py:149
 msgid "Email is already in use."
 msgstr "Емейл вже існує."
+
+#: .\user\tasks.py:23
+msgid "Available quizzes today"
+msgstr "Доступні на сьогодні вікторини"
+
+#: .\user\tasks.py:25
+#, python-brace-format
+msgid "{index}: Company \"{name}\". Quiz \"{title}\"."
+msgstr "{index}: Компанія \"{name}\". Вікторина \"{title}\"."
+
+#: .\user\tasks.py:31
+#, python-brace-format
+msgid "Available quizzes for user {username} ({first_name} {last_name}):\n"
+msgstr "Доступні вікторини для користувача {username} ({first_name} {last_name}):\n"
