@@ -16,7 +16,7 @@ def create_response(file, format_file, content_type):
 
 def data_to_json(data):
     with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix='.json') as file:
-        json.dump(data, file)
+        json.dump(data, file, default=str)
 
     return create_response(file, 'json', 'application/json')
 
@@ -25,7 +25,7 @@ def data_to_csv(data):
     with tempfile.NamedTemporaryFile(delete=False, mode='w', newline='', suffix='.csv') as file:
         writer = csv.writer(file)
 
-        writer.writerow(['id', 'date passed', 'company', 'quiz', 'score', 'date passed', 'quiz_time', 'user_rating'])
+        writer.writerow(['id', 'participant', 'company', 'quiz', 'score', 'date passed', 'quiz_time', 'user_rating'])
         for item in data:
             score = Decimal(item['correct_answers'] / item['total_questions'] * 100).quantize(Decimal('1.00'))
 

@@ -31,7 +31,7 @@ exclude = [
     "migrations",
 ]
 # No per-file ignores defined.
-per-file-ignores = {"services/decorators/__init__.py" = ["F401"]}
+per-file-ignores = {"services/decorators/__init__.py" = ["F401"], "notification/apps.py" = ["F401"]}
 
 # Set the maximum line length to 120 characters, following PEP 8.
 line-length = 120

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-26 23:24+0300\n"
+"POT-Creation-Date: 2023-11-08 16:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,8 +22,8 @@ msgstr ""
 "(n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
 
 #: .\common\permissions.py:145
-msgid "You have exceeded the limit. The quiz will be available via {}."
-msgstr "Ви перевищили ліміт. Тест буде доступний через {}."
+msgid "You have exceeded the limit. The quiz will be available via {}"
+msgstr "Ви перевищили ліміт. Тест буде доступний через {}"
 
 #: .\company\models.py:12
 msgid "name"
@@ -41,11 +41,11 @@ msgstr "видимість"
 msgid "owner"
 msgstr "власник"
 
-#: .\company\models.py:25 .\company\models.py:114 .\user\models.py:53
+#: .\company\models.py:25 .\company\models.py:114 .\user\models.py:61
 msgid "The user is already a member of the company."
 msgstr "Користувач вже є учасником компанії."
 
-#: .\company\models.py:27 .\company\serializers.py:65
+#: .\company\models.py:27 .\company\serializers.py:92
 msgid "The owner cannot be a member of the company."
 msgstr "Власник не може бути членом компанії."
 
@@ -68,7 +68,7 @@ msgid "The user is not a member of this company."
 msgstr "Користувач не є членом цієї компанії."
 
 #: .\company\models.py:82 .\company\models.py:88 .\company\models.py:103
-#: .\quiz\models.py:17 .\quiz\models.py:113 .\user\models.py:42
+#: .\quiz\models.py:17 .\quiz\models.py:113 .\user\models.py:50
 msgid "company"
 msgstr "компанія"
 
@@ -96,7 +96,7 @@ msgstr "учасники компанії"
 msgid "recipient"
 msgstr "отримувач"
 
-#: .\company\models.py:105 .\user\models.py:44
+#: .\company\models.py:105 .\notification\models.py:24 .\user\models.py:52
 msgid "status"
 msgstr "статус"
 
@@ -112,31 +112,69 @@ msgstr "запрошення в компанію"
 msgid "invitations to companies"
 msgstr "запрошення в компанії"
 
-#: .\company\views.py:70 .\company\views.py:75
+#: .\company\views.py:82 .\company\views.py:87
 msgid "User removed from the company."
 msgstr "Користувач видалений з компанії."
 
-#: .\company\views.py:80 .\company\views.py:88 .\quiz\views.py:93
-#: .\quiz\views.py:103 .\quiz\views.py:114 .\quiz\views.py:127
-#: .\quiz\views.py:140 .\user\views.py:38 .\user\views.py:45
+#: .\company\views.py:92 .\company\views.py:100 .\notification\views.py:23
+#: .\quiz\views.py:103 .\quiz\views.py:113 .\quiz\views.py:123
+#: .\quiz\views.py:134 .\quiz\views.py:151 .\quiz\views.py:164
+#: .\quiz\views.py:198 .\quiz\views.py:214 .\user\views.py:38
+#: .\user\views.py:45 .\user\views.py:52 .\user\views.py:59
 msgid "Page not found."
 msgstr "Сторінку не знайдено."
 
-#: .\company\views.py:83
+#: .\company\views.py:95
 msgid "An admin has been added to the company."
 msgstr "Адміністратора було додано до компанії"
 
-#: .\company\views.py:91
+#: .\company\views.py:103
 msgid "The admin was removed from the company."
 msgstr "Адміністратор був видалений з компанії."
 
-#: .\internship_meduzzen_backend\settings.py:149
+#: .\internship_meduzzen_backend\settings.py:161
 msgid "English"
 msgstr "Англійська"
 
-#: .\internship_meduzzen_backend\settings.py:150
+#: .\internship_meduzzen_backend\settings.py:162
 msgid "Ukraine"
 msgstr "Українська"
+
+#: .\notification\consumers.py:95
+msgid "A notification with given ID does not exist."
+msgstr "Повідомлення з даним ID не існує."
+
+#: .\notification\models.py:17
+msgid "user"
+msgstr "отримувач"
+
+#: .\notification\models.py:22 .\quiz\models.py:99
+msgid "text"
+msgstr "текст"
+
+#: .\notification\models.py:30
+msgid "notification"
+msgstr "повідомлення"
+
+#: .\notification\models.py:31
+msgid "notifications"
+msgstr "повідомлення"
+
+#: .\notification\models.py:49
+msgid "The notification has already been viewed"
+msgstr "Повідомлення вже було переглянуто."
+
+#: .\notification\models.py:51
+msgid "You cannot set this status yourself"
+msgstr "Ви не можете встановити цей статус самостійно"
+
+#: .\notification\signals.py:20
+msgid ""
+"The \"{company_name}\" company created a new quiz called \"{quiz_title}\". "
+"If you want to go through it, go to the company page."
+msgstr ""
+"Компанія \"{company_name}\" створила нову вікторину з назвою "
+"\"{quiz_title}\". Якщо ви хочете пройти її, перейдіть на сторінку компанії."
 
 #: .\quiz\models.py:18
 msgid "title"
@@ -173,10 +211,6 @@ msgstr "запитання"
 #: .\quiz\models.py:75
 msgid "questions"
 msgstr "опис"
-
-#: .\quiz\models.py:99
-msgid "text"
-msgstr "текст"
 
 #: .\quiz\models.py:100
 msgid "is right"
@@ -250,17 +284,21 @@ msgstr "Вікторину вже завершено."
 msgid "Answer data is required"
 msgstr "Дані відповідей є обов'язковими"
 
-#: .\quiz\serializers.py:122
+#: .\quiz\serializers.py:139
 msgid "A quiz must have at least {} questions."
 msgstr "Тест має містити принаймні {} запитань."
 
-#: .\quiz\serializers.py:129
+#: .\quiz\serializers.py:146
 msgid "A question must have at least {} answers."
 msgstr "Тест має містити принаймні {} запитань."
 
-#: .\quiz\serializers.py:132
+#: .\quiz\serializers.py:149
 msgid "At least one answer must be marked as correct."
 msgstr "Принаймні одна відповідь має бути позначена як правильна."
+
+#: .\quiz\views.py:206
+msgid "Permission Denied"
+msgstr "Відсутні права доступу"
 
 #: .\services\export\response_builder.py:14
 msgid "This format is not supported."
@@ -385,38 +423,38 @@ msgstr ""
 msgid "avatar"
 msgstr "аватар"
 
-#: .\user\models.py:41
+#: .\user\models.py:49
 msgid "sender"
 msgstr "відправник"
 
-#: .\user\models.py:51 .\user\models.py:61
+#: .\user\models.py:59 .\user\models.py:69
 msgid "The request has already been processed."
 msgstr "Запит вже було опрацьовано."
 
-#: .\user\models.py:66
+#: .\user\models.py:74
 msgid "request to company"
 msgstr "запит до компанії"
 
-#: .\user\models.py:67
+#: .\user\models.py:75
 msgid "requests to companies"
 msgstr "запити до компаній"
 
-#: .\user\serializers.py:59
+#: .\user\serializers.py:103
 msgid "Password is required for user creation."
 msgstr "Поле пароль є обов'язковим"
 
-#: .\user\serializers.py:64
+#: .\user\serializers.py:108
 msgid "Password and confirm_password are different."
 msgstr "Пароль та підтвердження пароля не співпадають."
 
-#: .\user\serializers.py:95
+#: .\user\serializers.py:139
 msgid "Maximum image size allowed is {} Mb"
 msgstr "Максимальний допустимий розмір файлу {} Mб"
 
-#: .\user\serializers.py:102
+#: .\user\serializers.py:146
 msgid "Email field is required."
 msgstr "Поле емейл є обов'язковим."
 
-#: .\user\serializers.py:105
+#: .\user\serializers.py:149
 msgid "Email is already in use."
 msgstr "Емейл вже існує."

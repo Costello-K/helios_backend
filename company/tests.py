@@ -242,7 +242,7 @@ class InvitationToCompanyTests(TestCase):
 
     def test_revoke_invitation(self):
         self.client.force_authenticate(user=self.user_2)
-        url = reverse('company-invitation-revoke', args=[self.company_2.id, self.user_1.id])
+        url = reverse('company-invitation-revoke', args=[self.company_2.id, self.invitation_2_1.id])
 
         response = self.client.post(url, format='json')
 
@@ -251,7 +251,7 @@ class InvitationToCompanyTests(TestCase):
 
     def test_non_owner_revoke_invitation(self):
         self.client.force_authenticate(user=self.user_1)
-        url = reverse('company-invitation-revoke', args=[self.company_2.id, self.user_1.id])
+        url = reverse('company-invitation-revoke', args=[self.company_2.id, self.invitation_2_1.id])
 
         response = self.client.post(url, format='json')
 

@@ -35,6 +35,7 @@ class SettingsPageNumberPagination(PageNumberPagination):
             'results': data,
             'total_pages': self.page.paginator.num_pages,
             'count': self.page.paginator.count,
+            'page_size': self.page_size,
             'links': {
                 'next': self.get_next_link(),
                 'previous': self.get_previous_link(),
