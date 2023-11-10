@@ -290,10 +290,10 @@ class QuizTests(TestCase):
 
         # create quiz #3
         create_response_2 = self.client.post(self.url_get_quiz_list, self.create_quiz_data_2, format='json')
-        quiz_id_2 = create_response_2.data['id']
+        quiz_id_2 = create_response_2.data['quizzes'][0]['id']
         # create quiz #4
         create_response_3 = self.client.post(self.url_get_quiz_list, self.create_quiz_data_3, format='json')
-        quiz_id_3 = create_response_3.data['id']
+        quiz_id_3 = create_response_3.data['quizzes'][0]['id']
 
         # take the quiz to get started
         self.client.force_authenticate(user=self.user_4)

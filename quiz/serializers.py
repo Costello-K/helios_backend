@@ -1,14 +1,17 @@
+from collections import OrderedDict
+
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
-from rest_framework import serializers
+from rest_framework import fields, serializers
 from rest_framework.exceptions import ValidationError
 
 from common.enums import QuizProgressStatus
 from company.models import Company
 from company.serializers import CompanySerializer
-from internship_meduzzen_backend.settings import MIN_COUNT_ANSWERS, MIN_COUNT_QUESTIONS
+from internship_meduzzen_backend.settings import EXCEL_FILE_MAX_SIZE_MB, MIN_COUNT_ANSWERS, MIN_COUNT_QUESTIONS
+from services.parsers.converter import convert_file_to_data
 from user.serializers import UserSerializer
 
 from .models import Answer, Question, Quiz, UserQuizResult
@@ -78,6 +81,9 @@ class QuizSerializer(serializers.ModelSerializer):
         }
 
     def to_representation(self, instance):
+        if isinstance(instance, list):
+            return {'quizzes': [self.to_representation(quiz) for quiz in instance]}
+
         data = super().to_representation(instance)
 
         if not self.context.get('full_access'):
@@ -92,17 +98,45 @@ class QuizDetailSerializer(QuizSerializer):
     class Meta(QuizSerializer.Meta):
         pass
 
+    def to_internal_value(self, data, is_file=True):
+        if self.context['request'].query_params.get('export_file') and is_file:
+            file = data.get('file', None)
+            if not file:
+                raise serializers.ValidationError({'message': _('File not found')})
+            if file.size > (EXCEL_FILE_MAX_SIZE_MB * 1024 * 1024):
+                raise serializers.ValidationError(
+                    {'file': _('Maximum file size allowed is {} Mb').format(EXCEL_FILE_MAX_SIZE_MB)}
+                )
+
+            quiz_list_data = convert_file_to_data(file)
+            if self.context['view'].action == 'create':
+                validated_quiz_list_data = OrderedDict()
+                for index, validated_quiz_data \
+                        in enumerate(self.to_internal_value(data, is_file=False) for data in quiz_list_data):
+                    fields.set_value(validated_quiz_list_data, f'{index}', validated_quiz_data)
+                return validated_quiz_list_data
+            if self.context['view'].action == 'partial_update':
+                return super().to_internal_value(quiz_list_data[0])
+
+            raise serializers.ValidationError({'message': _('Action not supported')})
+
+        return super().to_internal_value(data)
+
     def create(self, validated_data):
+        is_export_file = self.context['request'].query_params.get('export_file')
+        is_create = self.context['view'].action == 'create'
         company_pk = self.context['request'].parser_context['kwargs']['company_pk']
         company = get_object_or_404(Company, pk=company_pk)
-        validated_data['company'] = company
-        questions_data = validated_data.pop('questions')
 
         with transaction.atomic():
-            quiz = Quiz.objects.create(**validated_data)
-            self.create_or_update_questions(quiz, questions_data)
+            quizzes = []
+            if is_export_file and is_create:
+                for quiz_key in validated_data:
+                    quizzes.append(self.create_quiz(company, validated_data[quiz_key]))
+            else:
+                quizzes.append(self.create_quiz(company, validated_data))
 
-        return quiz
+        return quizzes
 
     def update(self, instance, validated_data):
         with transaction.atomic():
@@ -122,6 +156,13 @@ class QuizDetailSerializer(QuizSerializer):
             instance.save()
 
             return instance
+
+    def create_quiz(self, company, validated_data):
+        validated_data['company'] = company
+        questions_data = validated_data.pop('questions')
+        quiz = Quiz.objects.create(**validated_data)
+        self.create_or_update_questions(quiz, questions_data)
+        return quiz
 
     @staticmethod
     def create_or_update_questions(quiz, questions_data):
