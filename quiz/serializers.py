@@ -108,14 +108,15 @@ class QuizDetailSerializer(QuizSerializer):
                     {'file': _('Maximum file size allowed is {} Mb').format(EXCEL_FILE_MAX_SIZE_MB)}
                 )
 
-            new_data = convert_file_to_data(file)
+            quiz_list_data = convert_file_to_data(file)
             if self.context['view'].action == 'create':
-                ret = OrderedDict()
-                for i, value in enumerate(self.to_internal_value(data, is_file=False) for data in new_data):
-                    fields.set_value(ret, f'{i}', value)
-                return ret
+                validated_quiz_list_data = OrderedDict()
+                for index, validated_quiz_data \
+                        in enumerate(self.to_internal_value(data, is_file=False) for data in quiz_list_data):
+                    fields.set_value(validated_quiz_list_data, f'{index}', validated_quiz_data)
+                return validated_quiz_list_data
             if self.context['view'].action == 'partial_update':
-                return super().to_internal_value(new_data[0])
+                return super().to_internal_value(quiz_list_data[0])
 
             raise serializers.ValidationError({'message': _('Action not supported')})
 
@@ -130,8 +131,8 @@ class QuizDetailSerializer(QuizSerializer):
         with transaction.atomic():
             quizzes = []
             if is_export_file and is_create:
-                for key in validated_data:
-                    quizzes.append(self.create_quiz(company, validated_data[key]))
+                for quiz_key in validated_data:
+                    quizzes.append(self.create_quiz(company, validated_data[quiz_key]))
             else:
                 quizzes.append(self.create_quiz(company, validated_data))
 
