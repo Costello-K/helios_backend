@@ -34,21 +34,7 @@ class UserNotificationConsumer(AsyncJsonWebsocketConsumer):
     @staticmethod
     async def get_validate_data(instance):
         try:
-            if isinstance(instance, dict):
-                notification_data = NotificationWSSchema(
-                    id=instance['id'],
-                    text=instance['text'],
-                    status=instance['status'],
-                    created_at=instance['created_at'],
-                )
-            else:
-                notification_data = NotificationWSSchema(
-                    id=instance.id,
-                    text=instance.text,
-                    status=instance.status,
-                    created_at=instance.created_at,
-                )
-
+            notification_data = NotificationWSSchema(**instance if isinstance(instance, dict) else instance.__dict__)
             notification_dict = notification_data.model_dump()
             notification_dict['created_at'] = notification_dict['created_at'].isoformat()
 
