@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-18 00:28+0200\n"
+"POT-Creation-Date: 2023-11-10 02:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -285,15 +285,27 @@ msgstr "Вікторину вже завершено."
 msgid "Answer data is required"
 msgstr "Дані відповідей є обов'язковими"
 
-#: .\quiz\serializers.py:139
+#: .\quiz\serializers.py:105
+msgid "File not found"
+msgstr "Файл не знайдено."
+
+#: .\quiz\serializers.py:108
+msgid "Maximum file size allowed is {} Mb"
+msgstr "Максимальний допустимий розмір файлу {} Mб"
+
+#: .\quiz\serializers.py:120
+msgid "Action not supported"
+msgstr "Дія не підтримується."
+
+#: .\quiz\serializers.py:179
 msgid "A quiz must have at least {} questions."
 msgstr "Тест має містити принаймні {} запитань."
 
-#: .\quiz\serializers.py:146
+#: .\quiz\serializers.py:186
 msgid "A question must have at least {} answers."
 msgstr "Тест має містити принаймні {} запитань."
 
-#: .\quiz\serializers.py:149
+#: .\quiz\serializers.py:189
 msgid "At least one answer must be marked as correct."
 msgstr "Принаймні одна відповідь має бути позначена як правильна."
 
@@ -301,7 +313,7 @@ msgstr "Принаймні одна відповідь має бути позн�
 msgid "Permission Denied"
 msgstr "Відсутні права доступу"
 
-#: .\services\export\response_builder.py:14
+#: .\services\export\response_builder.py:14 .\services\parsers\converter.py:15
 msgid "This format is not supported."
 msgstr "Даний формат не підтримується."
 
@@ -472,4 +484,5 @@ msgstr "{index}: Компанія \"{name}\". Вікторина \"{title}\"."
 #: .\user\tasks.py:31
 #, python-brace-format
 msgid "Available quizzes for user {username} ({first_name} {last_name}):\n"
-msgstr "Доступні вікторини для користувача {username} ({first_name} {last_name}):\n"
+msgstr ""
+"Доступні вікторини для користувача {username} ({first_name} {last_name}):\n"
