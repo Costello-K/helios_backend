@@ -17,11 +17,6 @@ jobs:
       with:
         python-version: 3.11
         cache: 'pip'
-          
-    - name: Install dependencies
-      run: |
-        python3.11 -m pip install --upgrade pip
-        pip install -r requirements.txt
 
     - name: Create .env file
       run: |
@@ -33,6 +28,17 @@ jobs:
     needs: build
 
     steps:
+    - name: Create and start virtual environment
+      run: |
+        cd /home/ubuntu/actions-runner/meduzzen/internship_meduzzen_backend/internship_meduzzen_backend/
+        python3.11 -m venv venv
+        source venv/bin/activate
+
+    - name: Install dependencies
+      run: |
+        python3.11 -m pip install --upgrade pip
+        pip install -r requirements.txt
+
     - name: Restart Supervisor
       run: sudo supervisorctl restart internship_meduzzen_backend
 
