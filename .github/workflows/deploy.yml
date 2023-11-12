@@ -1,0 +1,47 @@
+name: Deployment to AWS
+
+on:
+  pull_request:
+    branches: BE-code-review
+    types: closed
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+        cache: 'pip'
+
+    - name: Create and start virtual environment
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+          
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Create .env file
+      run: |
+        touch .env
+        echo "{{ secrets.PROD_ENV_FILE }}" > .env
+        
+  deployment:
+    runs-on: self-hosted
+    needs: build
+
+    steps:
+    - uses: actions/checkout@v4
+          
+    - name: Restart Supervisor
+      run: sudo supervisorctl restart project
+
+    - name: Restart Nginx
+      run: sudo service nginx restart
