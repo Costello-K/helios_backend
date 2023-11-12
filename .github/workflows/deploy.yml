@@ -17,11 +17,6 @@ jobs:
       with:
         python-version: 3.11
         cache: 'pip'
-
-    - name: Create and start virtual environment
-      run: |
-        python3.11 -m venv venv
-        source venv/bin/activate
           
     - name: Install dependencies
       run: |
