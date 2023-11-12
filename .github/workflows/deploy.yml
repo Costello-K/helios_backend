@@ -17,15 +17,15 @@ jobs:
       with:
         python-version: 3.11
 
-    - name: Create .env file
-      run: |
-        touch .env
-        echo "${{ secrets.PROD_ENV_FILE }}" > .env
-
     - name: Install dependencies
       run: |
         python3.11 -m pip install --upgrade pip
         pip install -r requirements.txt
+
+    - name: Create .env file
+      run: |
+        touch .env
+        echo "${{ secrets.PROD_ENV_FILE }}" > .env
 
     - name: Restart Supervisor
       run: sudo supervisorctl restart internship_meduzzen_backend
