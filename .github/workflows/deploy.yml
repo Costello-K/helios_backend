@@ -27,6 +27,8 @@ jobs:
       run: |
         touch .env
         echo "${{ secrets.PROD_ENV_FILE }}" > .env
+        python3.11 manage.py collectstatic
+        python3.11 manage.py compilemessages
 
     - name: Restart Supervisor
       run: sudo supervisorctl restart internship_meduzzen_backend
