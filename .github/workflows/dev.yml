@@ -5,12 +5,12 @@ env:
   DEBUG: ${{ secrets.DEBUG }}
   DJANGO_ALLOWED_HOSTS: ${{ secrets.DJANGO_ALLOWED_HOSTS }}
 
-  PSQL_DB: ${{ secrets.PSQL_DB }}
-  PSQL_NAME: ${{ secrets.PSQL_NAME }}
-  PSQL_USER: ${{ secrets.PSQL_USER }}
-  PSQL_PASSWORD: ${{ secrets.PSQL_PASSWORD }}
-  PSQL_HOST: ${{ secrets.PSQL_HOST }}
-  PSQL_PORT: ${{ secrets.PSQL_PORT }}
+  POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+  POSTGRES_NAME: ${{ secrets.POSTGRES_NAME }}
+  POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+  POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+  POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
 
   REDIS_HOST: ${{ secrets.REDIS_HOST }}
   REDIS_PORT: ${{ secrets.REDIS_PORT }}
@@ -27,7 +27,7 @@ jobs:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_PASSWORD: ${{ env.PSQL_PASSWORD }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
         ports:
           - 5432:5432
         options: >-
