@@ -1,0 +1,22 @@
+name: Deployment to AWS EC2
+
+on:
+  pull_request:
+    branches: develop
+    types: closed
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Create .env file
+      run: |
+        touch .env
+        echo "${{ secrets.PROD_ENV_FILE }}" > .env
+
+    - name: Restart docker container
+      run: |
+        sudo docker-compose up -d --build

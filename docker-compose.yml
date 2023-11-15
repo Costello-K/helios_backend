@@ -2,12 +2,14 @@ version: '3.8'
 
 services:
   db:
-    container_name: ${PSQL_HOST}
+    container_name: ${POSTGRES_HOST}
     image: postgres:15.1
+    env_file:
+      - .env
     environment:
-      POSTGRES_DB: ${PSQL_DB}
-      POSTGRES_USER: ${PSQL_USER}
-      POSTGRES_PASSWORD: ${PSQL_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_NAME}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - '5432:5432'
     volumes:
@@ -19,19 +21,27 @@ services:
     container_name: ${REDIS_HOST}
     image: redis:latest
     restart: always
+    env_file:
+      - .env
     command: redis-server --requirepass ${REDIS_PASSWORD}
     ports:
       - '6379:6379'
     volumes:
-      - ./redis-data:/var/lib/redis/data/
+      - redis-data:/var/lib/redis/data/
     networks:
       - internship_network
 
   backend:
     container_name: internship_backend
-    build: ./
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    env_file:
+      - .env
+    command: /home/ubuntu/backend/start.sh
     volumes:
-      - .:/app
+      - static_volume:/home/ubuntu/backend/static
+      - media_volume:/home/ubuntu/backend/media
     ports:
       - '8000:8000'
     depends_on:
@@ -40,8 +50,64 @@ services:
     networks:
       - internship_network
 
+  celery:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    env_file:
+      - .env
+    command: /home/ubuntu/backend/celery/workers/start.sh
+    depends_on:
+      - db
+      - redis
+      - backend
+    volumes:
+      - celery_data:/home/ubuntu/backend/
+    networks:
+      - internship_network
+
+  flower:
+    container_name: flower
+    image: mher/flower
+    environment:
+      - CELERY_BROKER_URL=redis://default:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB}
+    command: celery flower --persistent=True
+    ports:
+      - '5555:5555'
+    depends_on:
+      - db
+      - redis
+      - backend
+      - celery
+    volumes:
+      - flower_data:/home/ubuntu/backend/
+    networks:
+      - internship_network
+
+  nginx:
+    container_name: nginx
+    restart: always
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    volumes:
+      - static_volume:/home/ubuntu/backend/static
+      - media_volume:/home/ubuntu/backend/media
+    ports:
+      - '8080:8080'
+    depends_on:
+      - backend
+    networks:
+      - internship_network
+
 volumes:
   pgsql_data:
+  redis-data:
+  static_volume:
+  media_volume:
+  celery_data:
+  flower_data:
 
 networks:
   internship_network:
