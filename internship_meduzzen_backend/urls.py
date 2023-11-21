@@ -9,10 +9,10 @@ from .yasg import urlpatterns as doc_urls
 
 urlpatterns = [
     path('', server_check, name='server_check'),
-    path('admin/', admin.site.urls),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
     path('auth/', include('djoser.social.urls')),
+    path('v1/', include('api_v1.urls')),
 ]
 
 # Serve media files in development
@@ -25,5 +25,5 @@ urlpatterns += doc_urls
 # Including URL patterns for multi-language support
 urlpatterns += i18n_patterns(
     path('i18n/', include('django.conf.urls.i18n')),
-    path('v1/', include('api_v1.urls')),
+    path('admin/', admin.site.urls),
 )

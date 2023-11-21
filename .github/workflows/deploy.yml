@@ -1,9 +1,6 @@
 name: Deployment to AWS EC2
 
-on:
-  pull_request:
-    branches: develop
-    types: closed
+on: [push]
 
 jobs:
   deploy:

@@ -24,7 +24,6 @@ DEBUG = os.environ.get('DEBUG', default=False)
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -58,10 +57,11 @@ MIDDLEWARE = [
     'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'internship_meduzzen_backend.middlewares.AddAccessControlAllowOriginCorsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -180,7 +180,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL)
 
 # Avatar
 DEFAULT_USER_AVATAR_URL = os.path.join(MEDIA_URL, 'default/images/users/avatar.png')
-USER_AVATAR_MAX_SIZE_MB = 2
+USER_AVATAR_MAX_SIZE_MB = 4
+MAX_USER_AVATAR_RESOLUTION = 360
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -227,7 +228,7 @@ DJOSER = {
         'user_create': ['rest_framework.permissions.AllowAny'],
     },
     'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': [
-        f'http://{ALLOWED_HOSTS[0]}/authorization'
+        f'https://{ALLOWED_HOSTS[0]}/authorization'
     ],
     'TOKEN_MODEL': None,
     'LOGIN_FIELD': 'username',
@@ -268,6 +269,10 @@ AUTHENTICATION_BACKENDS = [
     'social_core.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+# Cookies settings. Need for social authorization
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = 'None'
 
 # Google OAuth 2.0 settings
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('GOOGLE_OAUTH2_CLIENT_ID')
@@ -327,12 +332,14 @@ LOGGING = {
 }
 
 # CORS
-CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
-    f'http://{ALLOWED_HOSTS[0]}',
-    f'http://{ALLOWED_HOSTS[1]}',
-    'http://localhost:8081',
+    f'https://{ALLOWED_HOSTS[0]}',
+    f'https://{ALLOWED_HOSTS[1]}',
+]
+CSRF_TRUSTED_ORIGINS = [
+    f'https://{ALLOWED_HOSTS[0]}',
+    f'https://{ALLOWED_HOSTS[1]}',
 ]
 
 # EMAIL

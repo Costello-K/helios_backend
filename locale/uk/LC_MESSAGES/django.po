@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-10 02:08+0200\n"
+"POT-Creation-Date: 2023-11-20 17:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,7 +41,7 @@ msgstr "видимість"
 msgid "owner"
 msgstr "власник"
 
-#: .\company\models.py:25 .\company\models.py:114 .\user\models.py:61
+#: .\company\models.py:25 .\company\models.py:114 .\user\models.py:78
 msgid "The user is already a member of the company."
 msgstr "Користувач вже є учасником компанії."
 
@@ -68,7 +68,7 @@ msgid "The user is not a member of this company."
 msgstr "Користувач не є членом цієї компанії."
 
 #: .\company\models.py:82 .\company\models.py:88 .\company\models.py:103
-#: .\quiz\models.py:17 .\quiz\models.py:113 .\user\models.py:50
+#: .\quiz\models.py:17 .\quiz\models.py:113 .\user\models.py:67
 msgid "company"
 msgstr "компанія"
 
@@ -96,7 +96,7 @@ msgstr "учасники компанії"
 msgid "recipient"
 msgstr "отримувач"
 
-#: .\company\models.py:105 .\notification\models.py:24 .\user\models.py:52
+#: .\company\models.py:105 .\notification\models.py:23 .\user\models.py:69
 msgid "status"
 msgstr "статус"
 
@@ -140,31 +140,31 @@ msgstr "Англійська"
 msgid "Ukraine"
 msgstr "Українська"
 
-#: .\notification\consumers.py:95
+#: .\notification\consumers.py:81
 msgid "A notification with given ID does not exist."
 msgstr "Повідомлення з даним ID не існує."
 
-#: .\notification\models.py:17
+#: .\notification\models.py:16
 msgid "user"
 msgstr "отримувач"
 
-#: .\notification\models.py:22 .\quiz\models.py:99
+#: .\notification\models.py:21 .\quiz\models.py:99
 msgid "text"
 msgstr "текст"
 
-#: .\notification\models.py:30
+#: .\notification\models.py:29
 msgid "notification"
 msgstr "повідомлення"
 
-#: .\notification\models.py:31
+#: .\notification\models.py:30
 msgid "notifications"
 msgstr "повідомлення"
 
-#: .\notification\models.py:49
+#: .\notification\models.py:39
 msgid "The notification has already been viewed"
 msgstr "Повідомлення вже було переглянуто."
 
-#: .\notification\models.py:51
+#: .\notification\models.py:41
 msgid "You cannot set this status yourself"
 msgstr "Ви не можете встановити цей статус самостійно"
 
@@ -293,25 +293,29 @@ msgstr "Файл не знайдено."
 msgid "Maximum file size allowed is {} Mb"
 msgstr "Максимальний допустимий розмір файлу {} Mб"
 
-#: .\quiz\serializers.py:120
+#: .\quiz\serializers.py:121
 msgid "Action not supported"
 msgstr "Дія не підтримується."
 
-#: .\quiz\serializers.py:179
+#: .\quiz\serializers.py:180
 msgid "A quiz must have at least {} questions."
 msgstr "Тест має містити принаймні {} запитань."
 
-#: .\quiz\serializers.py:186
+#: .\quiz\serializers.py:187
 msgid "A question must have at least {} answers."
 msgstr "Тест має містити принаймні {} запитань."
 
-#: .\quiz\serializers.py:189
+#: .\quiz\serializers.py:190
 msgid "At least one answer must be marked as correct."
 msgstr "Принаймні одна відповідь має бути позначена як правильна."
 
 #: .\quiz\views.py:206
 msgid "Permission Denied"
 msgstr "Відсутні права доступу"
+
+#: .\services\compression_file\compression_image.py:10
+msgid "An invalid object was passed. A file was expected."
+msgstr "Передано невірний об’єкт. Очікується файл"
 
 #: .\services\export\response_builder.py:14 .\services\parsers\converter.py:15
 msgid "This format is not supported."
@@ -432,23 +436,23 @@ msgid "Please go to the following page and choose a new username:"
 msgstr ""
 "Будь ласка, перейдіть за наступним посиланням та виберіть новий юзернейм:"
 
-#: .\user\models.py:26
+#: .\user\models.py:29
 msgid "avatar"
 msgstr "аватар"
 
-#: .\user\models.py:49
+#: .\user\models.py:66
 msgid "sender"
 msgstr "відправник"
 
-#: .\user\models.py:59 .\user\models.py:69
+#: .\user\models.py:76 .\user\models.py:86
 msgid "The request has already been processed."
 msgstr "Запит вже було опрацьовано."
 
-#: .\user\models.py:74
+#: .\user\models.py:91
 msgid "request to company"
 msgstr "запит до компанії"
 
-#: .\user\models.py:75
+#: .\user\models.py:92
 msgid "requests to companies"
 msgstr "запити до компаній"
 
