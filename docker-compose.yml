@@ -31,11 +31,9 @@ services:
     networks:
       - internship_network
 
-  backend:
-    container_name: internship_backend
-    build:
-      context: .
-      dockerfile: ./Dockerfile
+  backend_wsgi:
+    container_name: internship_backend_wsgi
+    build: .
     env_file:
       - .env
     command: /home/ubuntu/backend/start.sh
@@ -50,18 +48,34 @@ services:
     networks:
       - internship_network
 
-  celery:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    restart: always
+  backend_asgi:
+    container_name: internship_backend_asgi
+    build: .
     env_file:
       - .env
-    command: /home/ubuntu/backend/celery/workers/start.sh
+    command: daphne -b 0.0.0.0 -p 8001 internship_meduzzen_backend.asgi:application
+    volumes:
+      - static_volume:/home/ubuntu/backend/static
+      - media_volume:/home/ubuntu/backend/media
+    ports:
+      - '8001:8001'
     depends_on:
       - db
       - redis
-      - backend
+      - backend_wsgi
+    networks:
+      - internship_network
+
+  celery:
+    build: .
+    restart: always
+    env_file:
+      - .env
+    command: celery -A internship_meduzzen_backend worker -l info
+    depends_on:
+      - db
+      - redis
+      - backend_wsgi
     volumes:
       - celery_data:/home/ubuntu/backend/
     networks:
@@ -70,15 +84,17 @@ services:
   flower:
     container_name: flower
     image: mher/flower
+    env_file:
+      - .env
     environment:
       - CELERY_BROKER_URL=redis://default:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB}
-    command: celery flower --persistent=True
+    command: celery flower --persistent=True --basic_auth=${FLOWER_USER}:${FLOWER_PASSWORD}
     ports:
       - '5555:5555'
     depends_on:
       - db
       - redis
-      - backend
+      - backend_wsgi
       - celery
     volumes:
       - flower_data:/home/ubuntu/backend/
@@ -95,9 +111,10 @@ services:
       - static_volume:/home/ubuntu/backend/static
       - media_volume:/home/ubuntu/backend/media
     ports:
-      - '8080:8080'
+      - '8070:8070'
     depends_on:
-      - backend
+      - backend_wsgi
+      - backend_asgi
     networks:
       - internship_network
 

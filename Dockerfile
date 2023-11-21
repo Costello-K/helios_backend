@@ -36,5 +36,4 @@ COPY .  $APP_HOME
 EXPOSE 8000
 
 # make the start.sh script executable
-RUN chmod +x $APP_HOME/celery/workers/start.sh
 RUN chmod +x $APP_HOME/start.sh

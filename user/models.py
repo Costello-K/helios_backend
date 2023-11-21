@@ -1,7 +1,9 @@
 from functools import partial
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -9,6 +11,7 @@ from common.enums import RequestStatus
 from common.exceptions import ObjectAlreadyInInstance, ObjectDoesNotExist
 from common.models import TimeStampedModel
 from company.models import Company, CompanyMember
+from services.compression_file.compression_image import compress_image_to_given_resolution
 from services.get_file_path import get_path_with_unique_filename
 
 
@@ -43,6 +46,20 @@ class CustomUser(AbstractUser, TimeStampedModel):
     @property
     def my_admin_companies(self):
         return Company.objects.filter(companymember__member=self, companymember__admin=True)
+
+    def save(self, *args, **kwargs):
+        if self.avatar:
+            max_img_resolution = getattr(settings, 'MAX_USER_AVATAR_RESOLUTION', 200)
+            width_img, height_img = self.avatar.width, self.avatar.height
+            if max(width_img, height_img) > max_img_resolution:
+                compressed_content = compress_image_to_given_resolution(self.avatar, max_img_resolution)
+
+                self.avatar.file = SimpleUploadedFile(
+                    name=self.avatar.name,
+                    content=compressed_content,
+                )
+
+        super().save(*args, **kwargs)
 
 
 class RequestToCompany(TimeStampedModel):
