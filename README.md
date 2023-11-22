@@ -1,9 +1,9 @@
 Project name:
-Backend internship at "Meduzzen" company
+Helios
 
 Project description:
 
-This project is an API application. Users can create companies, manage their employees, and create assessment quizzes for their employees. In addition, the system provides a function to notify employees about new quizzes. The project is built using the Django REST Framework (DRF) for the API.
+This project is an API application. Any users can create companies. Company owners can manage their employees, appoint administrators, and create quizzes to assess their employees. A notification system for employees about new quizzes, analytics of completed quizzes, and export of analytics are implemented. Creating and editing quizzes is possible through importing an Excel file. Password reset, account activation through email confirmation, CRUD for the user (including avatar), Facebook and Google authentication are implemented. English and Ukrainian languages are supported. The application is covered by tests The project is built using the Django REST Framework (DRF) for the API.
 
 Development Tools:
 
@@ -12,14 +12,12 @@ Development Tools:
     Django == 4.2.5
     Django REST Framework 3.14.0
 
-    Docker 20.10.2
-
 
 Installation and running the project:
 
 1) Clone the repository
 
-       https://github.com/Costello90/internship_meduzzen_backend.git
+       https://github.com/Costello90/helios_backend.git
 2) Create a virtual environment
 
        cd internship_meduzzen_backend
@@ -41,16 +39,13 @@ Installation and running the project:
 6) Run tests
 
        python manage.py test
-7) Create migrations
-
-       python manage.py makemigrations
-8) Apply migrations to the database
+7) Apply migrations to the database
 
        python manage.py migrate
-9) Run server
+8) Run server
 
        python manage.py runserver
-10) Links
+9) Links
 
     DRF API 
 
