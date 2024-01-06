@@ -8,7 +8,6 @@ This project is an API application. Any users can create companies. Company owne
 Development Tools:
 
     Python >= 3.11
-    
     Django == 4.2.5
     Django REST Framework 3.14.0
 
@@ -20,7 +19,7 @@ Installation and running the project:
        https://github.com/Costello-K/helios_backend.git
 2) Create a virtual environment
 
-       cd internship_meduzzen_backend
+       cd helios_backend
        python -m venv venv
 
 3) Activate virtual environment
