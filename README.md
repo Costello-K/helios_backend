@@ -19,10 +19,10 @@ Installation and running the project:
 
 1) Clone the repository
 
-       https://github.com/Costello90/internship_meduzzen_backend.git
+       https://github.com/Costello-K/helios_backend.git
 2) Create a virtual environment
 
-       cd internship_meduzzen_backend
+       cd helios_backend
        python -m venv venv
 
 3) Activate virtual environment

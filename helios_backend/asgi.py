@@ -1,5 +1,5 @@
 """
-ASGI config for internship_meduzzen_backend project.
+ASGI config for helios_backend project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -18,7 +18,7 @@ django.setup()
 
 from notification.routing import websocket_urlpatterns
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'internship_meduzzen_backend.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'helios_backend.settings')
 
 application = ProtocolTypeRouter({
     'http': get_asgi_application(),

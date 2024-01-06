@@ -15,7 +15,7 @@ services:
     volumes:
       - pgsql_data:/var/lib/postgresql/data/
     networks:
-      - internship_network
+      - helios_network
 
   redis:
     container_name: ${REDIS_HOST}
@@ -29,10 +29,10 @@ services:
     volumes:
       - redis-data:/var/lib/redis/data/
     networks:
-      - internship_network
+      - helios_network
 
   backend_wsgi:
-    container_name: internship_backend_wsgi
+    container_name: helios_backend_wsgi
     build: .
     env_file:
       - .env
@@ -46,14 +46,14 @@ services:
       - db
       - redis
     networks:
-      - internship_network
+      - helios_network
 
   backend_asgi:
-    container_name: internship_backend_asgi
+    container_name: helios_backend_asgi
     build: .
     env_file:
       - .env
-    command: daphne -b 0.0.0.0 -p 8001 internship_meduzzen_backend.asgi:application
+    command: daphne -b 0.0.0.0 -p 8001 helios_backend.asgi:application
     volumes:
       - static_volume:/home/ubuntu/backend/static
       - media_volume:/home/ubuntu/backend/media
@@ -64,14 +64,14 @@ services:
       - redis
       - backend_wsgi
     networks:
-      - internship_network
+      - helios_network
 
   celery:
     build: .
     restart: always
     env_file:
       - .env
-    command: celery -A internship_meduzzen_backend worker -l info
+    command: celery -A helios_backend worker -l info
     depends_on:
       - db
       - redis
@@ -79,7 +79,7 @@ services:
     volumes:
       - celery_data:/home/ubuntu/backend/
     networks:
-      - internship_network
+      - helios_network
 
   flower:
     container_name: flower
@@ -99,7 +99,7 @@ services:
     volumes:
       - flower_data:/home/ubuntu/backend/
     networks:
-      - internship_network
+      - helios_network
 
   nginx:
     container_name: nginx
@@ -116,7 +116,7 @@ services:
       - backend_wsgi
       - backend_asgi
     networks:
-      - internship_network
+      - helios_network
 
 volumes:
   pgsql_data:
@@ -127,6 +127,6 @@ volumes:
   flower_data:
 
 networks:
-  internship_network:
-    name: internship_network
+  helios_network:
+    name: helios_network
     driver: bridge
