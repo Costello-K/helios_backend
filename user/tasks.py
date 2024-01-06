@@ -2,8 +2,8 @@ from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.utils.translation import gettext_lazy as _
 
-from internship_meduzzen_backend.celery import app
-from internship_meduzzen_backend.settings import EMAIL_HOST_USER
+from helios_backend.celery import app
+from helios_backend.settings import EMAIL_HOST_USER
 from services.get_list_quizzes import get_available_user_quiz_list
 
 User = get_user_model()

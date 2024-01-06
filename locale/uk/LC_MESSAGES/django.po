@@ -132,11 +132,11 @@ msgstr "Адміністратора було додано до компанії
 msgid "The admin was removed from the company."
 msgstr "Адміністратор був видалений з компанії."
 
-#: .\internship_meduzzen_backend\settings.py:162
+#: .\helios_backend\settings.py:162
 msgid "English"
 msgstr "Англійська"
 
-#: .\internship_meduzzen_backend\settings.py:163
+#: .\helios_backend\settings.py:163
 msgid "Ukraine"
 msgstr "Українська"
 

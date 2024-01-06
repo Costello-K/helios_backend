@@ -57,7 +57,7 @@ MIDDLEWARE = [
     'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'internship_meduzzen_backend.middlewares.AddAccessControlAllowOriginCorsMiddleware',
+    'helios_backend.middlewares.AddAccessControlAllowOriginCorsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -68,7 +68,7 @@ MIDDLEWARE = [
     'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
-ROOT_URLCONF = 'internship_meduzzen_backend.urls'
+ROOT_URLCONF = 'helios_backend.urls'
 
 TEMPLATES = [
     {
@@ -86,8 +86,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'internship_meduzzen_backend.wsgi.application'
-ASGI_APPLICATION = 'internship_meduzzen_backend.asgi.application'
+WSGI_APPLICATION = 'helios_backend.wsgi.application'
+ASGI_APPLICATION = 'helios_backend.asgi.application'
 
 
 # Database
@@ -234,9 +234,9 @@ DJOSER = {
     'LOGIN_FIELD': 'username',
     'SEND_ACTIVATION_EMAIL': True,
     'EMAIL': {
-        'activation': 'internship_meduzzen_backend.email.ActivationEmail',
-        'password_reset': 'internship_meduzzen_backend.email.PasswordResetEmail',
-        'username_reset': 'internship_meduzzen_backend.email.UsernameResetEmail',
+        'activation': 'helios_backend.email.ActivationEmail',
+        'password_reset': 'helios_backend.email.PasswordResetEmail',
+        'username_reset': 'helios_backend.email.UsernameResetEmail',
     },
     'ACTIVATION_URL': 'auth/users/activate/{uid}/{token}',
     'PASSWORD_RESET_CONFIRM_URL': 'auth/users/reset_confirm/password/{uid}/{token}',

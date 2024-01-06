@@ -10,7 +10,7 @@ from rest_framework.exceptions import ValidationError
 from common.enums import QuizProgressStatus
 from company.models import Company
 from company.serializers import CompanySerializer
-from internship_meduzzen_backend.settings import EXCEL_FILE_MAX_SIZE_MB, MIN_COUNT_ANSWERS, MIN_COUNT_QUESTIONS
+from helios_backend.settings import EXCEL_FILE_MAX_SIZE_MB, MIN_COUNT_ANSWERS, MIN_COUNT_QUESTIONS
 from services.parsers.converter import convert_file_to_data
 from user.serializers import UserSerializer
 

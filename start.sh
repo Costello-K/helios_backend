@@ -10,4 +10,4 @@ python manage.py compilemessages
 # collect static files from individual apps into a single location
 python manage.py collectstatic --no-input
 
-gunicorn internship_meduzzen_backend.wsgi:application --bind 0.0.0.0:8000
+gunicorn helios_backend.wsgi:application --bind 0.0.0.0:8000

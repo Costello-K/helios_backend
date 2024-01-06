@@ -5,7 +5,7 @@ from rest_framework import serializers
 
 from common.enums import QuizProgressStatus, RequestStatus
 from company.models import Company
-from internship_meduzzen_backend.settings import DEFAULT_USER_AVATAR_URL, USER_AVATAR_MAX_SIZE_MB
+from helios_backend.settings import DEFAULT_USER_AVATAR_URL, USER_AVATAR_MAX_SIZE_MB
 from user.models import RequestToCompany
 
 User = get_user_model()
