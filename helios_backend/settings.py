@@ -169,12 +169,12 @@ LOCALE_PATHS = [
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
-STATIC_URL = '/home/ubuntu/backend/static/'
+STATIC_URL = '/home/ubuntu/helios_backend/static/'
 STATIC_DIR = os.path.join(BASE_DIR, STATIC_URL)
 STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL)
 
 # Extra places for collect static files.
-MEDIA_URL = '/home/ubuntu/backend/media/'
+MEDIA_URL = '/home/ubuntu/helios_backend/media/'
 MEDIA_DIR = os.path.join(BASE_DIR, MEDIA_URL)
 MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL)
 
